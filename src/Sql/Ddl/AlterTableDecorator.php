@@ -68,9 +68,9 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
         $insertStart = [];
 
         foreach (['NOT NULL', 'NULL', 'DEFAULT', 'UNIQUE', 'PRIMARY', 'REFERENCES'] as $needle) {
-            $insertPos = strpos($sql, ' ' . $needle);
+            $insertPos = strpos($sql, " {$needle}");
 
-            if ($insertPos !== false) {
+            if (false !== $insertPos) {
                 switch ($needle) {
                     case 'REFERENCES':
                         $insertStart[2] = ! isset($insertStart[2]) ? $insertPos : $insertStart[2];
@@ -86,7 +86,7 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
         }
 
         foreach (range(0, 3) as $i) {
-            $insertStart[$i] = $insertStart[$i] ?? $sqlLength;
+            $insertStart[$i] ??= $sqlLength;
         }
 
         return $insertStart;
@@ -120,11 +120,11 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
                         $j      = 0;
                         break;
                     case 'charset':
-                        $insert = ' CHARACTER SET ' . $coValue;
+                        $insert = " CHARACTER SET {$coValue}";
                         $j      = 0;
                         break;
                     case 'collate':
-                        $insert = ' COLLATE ' . $coValue;
+                        $insert = " COLLATE {$coValue}";
                         $j      = 0;
                         break;
                     case 'identity':
@@ -134,7 +134,7 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
                         $j      = 1;
                         break;
                     case 'comment':
-                        $insert = ' COMMENT ' . $adapterPlatform->quoteValue($coValue);
+                        $insert = " COMMENT {$adapterPlatform->quoteValue($coValue)}";
                         $j      = 2;
                         break;
                     case 'columnformat':
@@ -147,12 +147,12 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
                         $j      = 2;
                         break;
                     case 'after':
-                        $insert = ' AFTER ' . $adapterPlatform->quoteIdentifier($coValue);
+                        $insert = " AFTER {$adapterPlatform->quoteIdentifier($coValue)}";
                         $j      = 2;
                 }
 
                 if ($insert) {
-                    $j                = $j ?? 0;
+                    $j                ??= 0;
                     $sql              = substr_replace($sql, $insert, $insertStart[$j], 0);
                     $insertStartCount = count($insertStart);
                     for (; $j < $insertStartCount; ++$j) {
@@ -192,11 +192,11 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
                         $j      = 0;
                         break;
                     case 'charset':
-                        $insert = ' CHARACTER SET ' . $coValue;
+                        $insert = " CHARACTER SET {$coValue}";
                         $j      = 0;
                         break;
                     case 'collate':
-                        $insert = ' COLLATE ' . $coValue;
+                        $insert = " COLLATE {$coValue}";
                         $j      = 0;
                         break;
                     case 'identity':
@@ -206,7 +206,7 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
                         $j      = 1;
                         break;
                     case 'comment':
-                        $insert = ' COMMENT ' . $adapterPlatform->quoteValue($coValue);
+                        $insert = " COMMENT {$adapterPlatform->quoteValue($coValue)}";
                         $j      = 2;
                         break;
                     case 'columnformat':
@@ -221,7 +221,7 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
                 }
 
                 if ($insert) {
-                    $j                = $j ?? 0;
+                    $j                ??= 0;
                     $sql              = substr_replace($sql, $insert, $insertStart[$j], 0);
                     $insertStartCount = count($insertStart);
                     for (; $j < $insertStartCount; ++$j) {

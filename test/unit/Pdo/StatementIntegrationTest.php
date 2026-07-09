@@ -9,7 +9,7 @@ use PDO;
 use PDOStatement;
 use PhpDb\Adapter\Driver\Pdo\Statement;
 use PhpDb\Mysql\Pdo\Driver as PdoDriver;
-use PhpDbTest\Mysql\Pdo\TestAsset;
+
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

@@ -151,7 +151,7 @@ final class ConnectionTest extends TestCase
                 $this->equalTo('')
             );
 
-        if ($flags === 0) {
+        if (0 === $flags) {
             // Do not pass $flags argument if invalid flags provided
             $mysqli->expects($this->once())
                 ->method('real_connect')

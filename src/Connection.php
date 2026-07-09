@@ -96,7 +96,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
 
         // given a list of key names, test for existence in $p
         /** @var string[] $names */
-        $findParameterValue = function (array $names) use ($p): string|null {
+        $findParameterValue = static function (array $names) use ($p): string|null {
             foreach ($names as $name) {
                 if (isset($p[$name])) {
                     return $p[$name];
@@ -157,7 +157,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
         }
 
         try {
-            $flags === null
+            null === $flags
                 ? $this->resource->real_connect($hostname, $username, $password, $database, $port, $socket)
                 : $this->resource->real_connect($hostname, $username, $password, $database, $port, $socket, $flags);
         } catch (GenericException) {
@@ -267,11 +267,11 @@ class Connection extends AbstractConnection implements DriverAwareInterface
         $this->profiler?->profilerFinish($sql);
 
         // if the returnValue is something other than a mysqli_result, bypass wrapping it
-        if ($resultResource === false) {
+        if (false === $resultResource) {
             throw new Exception\InvalidQueryException($this->resource->error);
         }
 
-        return $this->driver->createResult($resultResource === true ? $this->resource : $resultResource);
+        return $this->driver->createResult(true === $resultResource ? $this->resource : $resultResource);
     }
 
     /** @inheritDoc */

@@ -83,7 +83,7 @@ class Connection extends AbstractPdoConnection
                 'unix_socket'                        => $unixSocket = (string) $value,
                 'version'                            => $version    = (string) $value,
                 // todo: should we suppport sslmode for pdo pgsql?
-                'driver_options' => (function (&$options, $value): void {
+                'driver_options' => (static function (&$options, $value): void {
                     $value   = (array) $value;
                     $options = array_diff_key($options, $value) + $value;
                 })($options, $value),
@@ -92,7 +92,7 @@ class Connection extends AbstractPdoConnection
         }
         unset($result);
 
-        if (isset($hostname) && isset($unixSocket)) {
+        if (isset($hostname, $unixSocket)) {
             throw new Exception\InvalidConnectionParametersException(
                 'Ambiguous connection parameters, both hostname and unix_socket parameters were set',
                 $this->connectionParameters
@@ -140,7 +140,7 @@ class Connection extends AbstractPdoConnection
             if (! is_int($code)) {
                 $code = 0;
             }
-            throw new Exception\RuntimeException('Connect Error: ' . $e->getMessage(), $code, $e);
+            throw new Exception\RuntimeException("Connect Error: {$e->getMessage()}", $code, $e);
         }
 
         return $this;

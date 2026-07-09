@@ -174,11 +174,11 @@ final class Statement implements StatementInterface, DriverAwareInterface, Profi
 
         $this->profiler?->profilerFinish();
 
-        if ($return === false) {
+        if (false === $return) {
             throw new Exception\RuntimeException($this->resource->error);
         }
 
-        if ($this->bufferResults === true) {
+        if (true === $this->bufferResults) {
             $this->resource->store_result();
             $this->isPrepared = false;
             $buffered         = true;

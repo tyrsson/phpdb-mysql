@@ -37,7 +37,7 @@ final class Driver implements DriverInterface, ProfilerAwareInterface
     ) {
         $this->checkEnvironment();
 
-        $options = array_intersect_key(array_merge($this->options, $options), $this->options);
+        $options = array_intersect_key([...$this->options, ...$options], $this->options);
 
         if ($this->connection instanceof DriverAwareInterface) {
             $this->connection->setDriver($this);

@@ -80,6 +80,6 @@ abstract class AbstractAdapterTestCase extends TestCase
     protected function isTcpConnection(): bool
     {
         $hostName = $this->getHostname();
-        return $hostName !== 'localhost' && $hostName !== '127.0.0.1';
+        return 'localhost' !== $hostName && '127.0.0.1' !== $hostName;
     }
 }

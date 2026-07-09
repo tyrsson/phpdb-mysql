@@ -29,7 +29,7 @@ final class ResultTest extends TestCase
         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
         $mock->expects($this->any())
             ->method('fetch')
-            ->willReturnCallback(fn() => uniqid());
+            ->willReturnCallback(static fn() => uniqid());
 
         $result = new Result();
         $result->initialize($mock, null);
@@ -53,7 +53,7 @@ final class ResultTest extends TestCase
         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
         $mock->expects($this->any())
             ->method('fetch')
-            ->willReturnCallback(fn() => new stdClass());
+            ->willReturnCallback(static fn() => new stdClass());
 
         $result = new Result();
         $result->initialize($mock, null);
@@ -71,7 +71,7 @@ final class ResultTest extends TestCase
         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
         $mock->expects($this->any())
             ->method('fetch')
-            ->willReturnCallback(fn() => new stdClass());
+            ->willReturnCallback(static fn() => new stdClass());
         $result = new Result();
         $result->initialize($mock, null);
         $result->setFetchMode(PDO::FETCH_NAMED);
@@ -123,7 +123,7 @@ final class ResultTest extends TestCase
             ->method('rowCount');
 
         $result = new Result();
-        $result->initialize($mock, null, fn() => 3);
+        $result->initialize($mock, null, static fn() => 3);
 
         self::assertSame(3, $result->count());
     }
@@ -140,7 +140,7 @@ final class ResultTest extends TestCase
         assert($mock instanceof PDOStatement); // to suppress IDE type warnings
         $mock->expects($this->any())
             ->method('fetch')
-            ->willReturnCallback(function () use ($data, &$position) {
+            ->willReturnCallback(static function () use ($data, &$position) {
                 return $data[$position++];
             });
         $result = new Result();
