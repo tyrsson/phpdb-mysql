@@ -13,6 +13,7 @@ use PhpDb\Mysql\Pdo\Connection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('container')]
@@ -23,7 +24,8 @@ final class PdoConnectionInterfaceFactoryTest extends TestCase
 {
     use TestAsset\SetupTrait;
 
-    public function testInvokeReturnsPdoConnection(): void
+    #[Test]
+    public function invokeReturnsPdoConnection(): void
     {
         $factory  = new PdoConnectionInterfaceFactory();
         $instance = $factory(
@@ -36,7 +38,8 @@ final class PdoConnectionInterfaceFactoryTest extends TestCase
         self::assertInstanceOf(Connection::class, $instance);
     }
 
-    public function testInvokeThrowsExceptionWithoutConnectionConfig(): void
+    #[Test]
+    public function invokeThrowsExceptionWithoutConnectionConfig(): void
     {
         $this->expectException(InvalidConnectionParametersException::class);
 

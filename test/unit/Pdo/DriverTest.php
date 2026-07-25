@@ -14,6 +14,7 @@ use PhpDb\Mysql\Pdo\Connection;
 use PhpDb\Mysql\Pdo\Driver;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(Driver::class, 'getDatabasePlatformName')]
@@ -59,7 +60,8 @@ final class DriverTest extends TestCase
     }
 
     #[DataProvider('getParamsAndType')]
-    public function testFormatParameterName(int|string $name, ?string $type, string $expected): void
+    #[Test]
+    public function formatParameterName(int|string $name, ?string $type, string $expected): void
     {
         $result = $this->pdo->formatParameterName($name, $type);
         $this->assertEquals($expected, $result);
@@ -77,20 +79,23 @@ final class DriverTest extends TestCase
     }
 
     #[DataProvider('getInvalidParamName')]
-    public function testFormatParameterNameWithInvalidCharacters(string $name): void
+    #[Test]
+    public function formatParameterNameWithInvalidCharacters(string $name): void
     {
         $this->expectException(RuntimeException::class);
         $this->pdo->formatParameterName($name);
     }
 
-    public function testGetResultPrototype(): void
+    #[Test]
+    public function getResultPrototype(): void
     {
         $resultPrototype = $this->pdo->getResultPrototype();
 
         self::assertInstanceOf(Result::class, $resultPrototype);
     }
 
-    public function testCreateResultPassesNullRowCount(): void
+    #[Test]
+    public function createResultPassesNullRowCount(): void
     {
         $pdoStatement = $this->getMockBuilder(PDOStatement::class)->getMock();
         $pdoStatement->expects($this->once())

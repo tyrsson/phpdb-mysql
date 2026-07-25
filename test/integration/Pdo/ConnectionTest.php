@@ -18,6 +18,7 @@ use PhpDbIntegrationTest\Mysql\Container\TestAsset\SetupTrait;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('integration')]
@@ -32,13 +33,15 @@ final class ConnectionTest extends TestCase
 {
     use SetupTrait;
 
-    public function testGetResource(): void
+    #[Test]
+    public function getResource(): void
     {
         $connection = $this->getAdapter()->getDriver()->getConnection();
         self::assertInstanceOf(PDO::class, $connection->getResource());
     }
 
-    public function testExecute(): void
+    #[Test]
+    public function execute(): void
     {
         $connection = $this->getAdapter()->getDriver()->getConnection();
         /** @var ResultInterface&Result $result */
@@ -47,7 +50,8 @@ final class ConnectionTest extends TestCase
         self::assertInstanceOf(Result::class, $result);
     }
 
-    public function testPrepare(): void
+    #[Test]
+    public function prepare(): void
     {
         /** @var ConnectionInterface&PdoConnectionInterface&AbstractConnection&AbstractPdoConnection&Connection $connection */
         $connection = $this->getAdapter()->getDriver()->getConnection();
@@ -57,7 +61,8 @@ final class ConnectionTest extends TestCase
         self::assertInstanceOf(Statement::class, $statement);
     }
 
-    public function testGetLastGeneratedValue(): void
+    #[Test]
+    public function getLastGeneratedValue(): void
     {
         /** @var ConnectionInterface&PdoConnectionInterface&AbstractConnection&AbstractPdoConnection&Connection $connection */
         $connection = $this->getAdapter()->getDriver()->getConnection();
@@ -67,7 +72,8 @@ final class ConnectionTest extends TestCase
         $connection->disconnect();
     }
 
-    public function testConnectMethodReturnsConnectionInterface(): void
+    #[Test]
+    public function connectMethodReturnsConnectionInterface(): void
     {
         /** @var ConnectionInterface&PdoConnectionInterface&AbstractConnection&AbstractPdoConnection&Connection $connection */
         $connection = $this->getAdapter()->getDriver()->getConnection();
@@ -75,7 +81,8 @@ final class ConnectionTest extends TestCase
         $connection->disconnect();
     }
 
-    public function testBeginTransaction(): void
+    #[Test]
+    public function beginTransaction(): void
     {
         $connection = $this->getAdapter()->getDriver()->getConnection();
         $connection->connect();
@@ -93,7 +100,8 @@ final class ConnectionTest extends TestCase
         $connection->disconnect();
     }
 
-    public function testCommit(): void
+    #[Test]
+    public function commit(): void
     {
         $connection = $this->getAdapter()->getDriver()->getConnection();
         $connection->connect();
@@ -115,7 +123,8 @@ final class ConnectionTest extends TestCase
         $connection->disconnect();
     }
 
-    public function testRollback(): void
+    #[Test]
+    public function rollback(): void
     {
         $connection = $this->getAdapter()->getDriver()->getConnection();
         $connection->connect();
@@ -136,7 +145,8 @@ final class ConnectionTest extends TestCase
         $connection->disconnect();
     }
 
-    public function testAutocommitRestoredAfterCommit(): void
+    #[Test]
+    public function autocommitRestoredAfterCommit(): void
     {
         /** @var Connection $connection */
         $connection = $this->getAdapter()->getDriver()->getConnection();
@@ -160,7 +170,8 @@ final class ConnectionTest extends TestCase
         $connection->disconnect();
     }
 
-    public function testAutocommitRestoredAfterRollback(): void
+    #[Test]
+    public function autocommitRestoredAfterRollback(): void
     {
         /** @var Connection $connection */
         $connection = $this->getAdapter()->getDriver()->getConnection();

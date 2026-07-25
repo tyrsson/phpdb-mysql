@@ -14,6 +14,7 @@ use PhpDb\Sql\Sql;
 use PhpDbIntegrationTest\Mysql\Container\TestAsset\SetupTrait;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(Adapter::class, 'query')]
@@ -49,7 +50,8 @@ final class QueryTest extends TestCase
      * @throws Exception
      */
     #[DataProvider('getQueriesWithRowResult')]
-    public function testQuery(string $query, array $params, array $expected): void
+    #[Test]
+    public function query(string $query, array $params, array $expected): void
     {
         /** @todo Have AdapterInterface implement query */
         $result = $this->getAdapter()->query($query, $params);
@@ -69,7 +71,8 @@ final class QueryTest extends TestCase
      *
      * @throws Exception
      */
-    public function testSetSessionTimeZone(): void
+    #[Test]
+    public function setSessionTimeZone(): void
     {
         $result = $this->getAdapter()->query('SET @@session.time_zone = :tz', [':tz' => 'SYSTEM']);
         $this->assertInstanceOf(PdoResult::class, $result);
@@ -78,27 +81,31 @@ final class QueryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testSelectWithNotPermittedBindParamName(): void
+    #[Test]
+    public function selectWithNotPermittedBindParamName(): void
     {
         $this->expectException(RuntimeException::class);
         $this->getAdapter()->query('SET @@session.time_zone = :tz$', [':tz$' => 'SYSTEM']);
     }
 
-    public function testSelectResultCountReturnsActualRowCount(): void
+    #[Test]
+    public function selectResultCountReturnsActualRowCount(): void
     {
         $result = $this->getAdapter()->query('SELECT * FROM test WHERE value = ?', ['bar']);
         $this->assertInstanceOf(ResultSet::class, $result);
         self::assertSame(3, $result->count());
     }
 
-    public function testSelectResultCountWithWhereClause(): void
+    #[Test]
+    public function selectResultCountWithWhereClause(): void
     {
         $result = $this->getAdapter()->query('SELECT * FROM test WHERE name = ?', ['foo']);
         $this->assertInstanceOf(ResultSet::class, $result);
         self::assertSame(1, $result->count());
     }
 
-    public function testSelectResultCountReturnsZeroForNoResults(): void
+    #[Test]
+    public function selectResultCountReturnsZeroForNoResults(): void
     {
         $result = $this->getAdapter()->query('SELECT * FROM test WHERE name = ?', ['nonexistent']);
         $this->assertInstanceOf(ResultSet::class, $result);
@@ -108,7 +115,8 @@ final class QueryTest extends TestCase
     /**
      * @see https://github.com/laminas/laminas-db/issues/47
      */
-    public function testNamedParameters(): void
+    #[Test]
+    public function namedParameters(): void
     {
         $this->assertNotNull($this->adapter);
         $sql = new Sql($this->adapter);

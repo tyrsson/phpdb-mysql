@@ -11,6 +11,7 @@ use PhpDb\Mysql\AdapterPlatform;
 use PhpDb\Mysql\Pdo\Connection;
 use PhpDb\Mysql\Pdo\Driver;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(AdapterPlatform::class, 'getName')]
@@ -42,24 +43,28 @@ final class AdapterPlatformTest extends TestCase
         $this->platform = new AdapterPlatform($pdo);
     }
 
-    public function testGetName(): void
+    #[Test]
+    public function getName(): void
     {
         self::assertEquals('MySQL', $this->platform->getName());
     }
 
-    public function testGetQuoteIdentifierSymbol(): void
+    #[Test]
+    public function getQuoteIdentifierSymbol(): void
     {
         self::assertEquals('`', $this->platform->getQuoteIdentifierSymbol());
     }
 
-    public function testQuoteIdentifier(): void
+    #[Test]
+    public function quoteIdentifier(): void
     {
         self::assertEquals('`identifier`', $this->platform->quoteIdentifier('identifier'));
         self::assertEquals('`ident``ifier`', $this->platform->quoteIdentifier('ident`ifier'));
         self::assertEquals('`namespace:$identifier`', $this->platform->quoteIdentifier('namespace:$identifier'));
     }
 
-    public function testQuoteIdentifierChain(): void
+    #[Test]
+    public function quoteIdentifierChain(): void
     {
         self::assertEquals('`identifier`', $this->platform->quoteIdentifierChain('identifier'));
         self::assertEquals('`identifier`', $this->platform->quoteIdentifierChain(['identifier']));
@@ -73,12 +78,14 @@ final class AdapterPlatformTest extends TestCase
         );
     }
 
-    public function testGetQuoteValueSymbol(): void
+    #[Test]
+    public function getQuoteValueSymbol(): void
     {
         self::assertEquals("'", $this->platform->getQuoteValueSymbol());
     }
 
-    public function testQuoteValueRaisesNoticeWithoutPlatformSupport(): void
+    #[Test]
+    public function quoteValueRaisesNoticeWithoutPlatformSupport(): void
     {
         /**
          * todo: Determine if vulnerability warning is required during unit testing
@@ -96,7 +103,8 @@ final class AdapterPlatformTest extends TestCase
         $this->platform->quoteValue('value');
     }
 
-    public function testQuoteValue(): void
+    #[Test]
+    public function quoteValue(): void
     {
         self::assertEquals("'value'", @$this->platform->quoteValue('value'));
         self::assertEquals("'Foo O\\'Bar'", @$this->platform->quoteValue("Foo O'Bar"));
@@ -110,7 +118,8 @@ final class AdapterPlatformTest extends TestCase
         );
     }
 
-    public function testQuoteTrustedValue(): void
+    #[Test]
+    public function quoteTrustedValue(): void
     {
         self::assertEquals("'value'", $this->platform->quoteTrustedValue('value'));
         self::assertEquals("'Foo O\\'Bar'", $this->platform->quoteTrustedValue("Foo O'Bar"));
@@ -126,7 +135,8 @@ final class AdapterPlatformTest extends TestCase
         );
     }
 
-    public function testQuoteValueList(): void
+    #[Test]
+    public function quoteValueList(): void
     {
         /**
          * @todo Determine if vulnerability warning is required during unit testing
@@ -139,12 +149,14 @@ final class AdapterPlatformTest extends TestCase
         self::assertEquals("'Foo O\\'Bar'", $this->platform->quoteValueList("Foo O'Bar"));
     }
 
-    public function testGetIdentifierSeparator(): void
+    #[Test]
+    public function getIdentifierSeparator(): void
     {
         self::assertEquals('.', $this->platform->getIdentifierSeparator());
     }
 
-    public function testQuoteIdentifierInFragment(): void
+    #[Test]
+    public function quoteIdentifierInFragment(): void
     {
         self::assertEquals('`foo`.`bar`', $this->platform->quoteIdentifierInFragment('foo.bar'));
         self::assertEquals('`foo` as `bar`', $this->platform->quoteIdentifierInFragment('foo as bar'));

@@ -11,6 +11,7 @@ use PhpDbIntegrationTest\Mysql\Container\TestAsset\SetupTrait;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('integration')]
@@ -33,7 +34,8 @@ final class AdapterPlatformTest extends TestCase
     }
 
     #[DataProvider('quoteValueProvider')]
-    public function testQuoteValueWithMysqli(string $input, string $expected): void
+    #[Test]
+    public function quoteValueWithMysqli(string $input, string $expected): void
     {
         $this->driver = Driver::class;
         $adapter      = $this->getAdapter();
@@ -44,7 +46,8 @@ final class AdapterPlatformTest extends TestCase
     }
 
     #[DataProvider('quoteValueProvider')]
-    public function testQuoteValueWithPdoMysql(string $input, string $expected): void
+    #[Test]
+    public function quoteValueWithPdoMysql(string $input, string $expected): void
     {
         $this->driver = PdoDriver::class;
         $adapter      = $this->getAdapter();

@@ -11,6 +11,7 @@ use PhpDb\Adapter\Driver\Pdo\Statement;
 use PhpDb\Mysql\Pdo\Driver as PdoDriver;
 
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -51,7 +52,8 @@ final class StatementIntegrationTest extends TestCase
     {
     }
 
-    public function testStatementExecuteWillConvertPhpBoolToPdoBoolWhenBinding(): void
+    #[Test]
+    public function statementExecuteWillConvertPhpBoolToPdoBoolWhenBinding(): void
     {
         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
             $this->equalTo(':foo'),
@@ -61,7 +63,8 @@ final class StatementIntegrationTest extends TestCase
         $this->statement->execute(['foo' => false]);
     }
 
-    public function testStatementExecuteWillUsePdoStrByDefaultWhenBinding(): void
+    #[Test]
+    public function statementExecuteWillUsePdoStrByDefaultWhenBinding(): void
     {
         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
             $this->equalTo(':foo'),
@@ -71,7 +74,8 @@ final class StatementIntegrationTest extends TestCase
         $this->statement->execute(['foo' => 'bar']);
     }
 
-    public function testStatementExecuteWillUsePdoStrForStringIntegerWhenBinding(): void
+    #[Test]
+    public function statementExecuteWillUsePdoStrForStringIntegerWhenBinding(): void
     {
         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
             $this->equalTo(':foo'),
@@ -81,7 +85,8 @@ final class StatementIntegrationTest extends TestCase
         $this->statement->execute(['foo' => '123']);
     }
 
-    public function testStatementExecuteWillUsePdoIntForIntWhenBinding(): void
+    #[Test]
+    public function statementExecuteWillUsePdoIntForIntWhenBinding(): void
     {
         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
             $this->equalTo(':foo'),

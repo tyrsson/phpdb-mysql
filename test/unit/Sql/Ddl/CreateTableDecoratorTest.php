@@ -14,6 +14,7 @@ use PhpDb\Sql\Ddl\Column;
 use PhpDb\Sql\Ddl\Constraint;
 use PhpDb\Sql\Ddl\CreateTable;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(CreateTableDecorator::class, 'processColumns')]
@@ -40,7 +41,8 @@ final class CreateTableDecoratorTest extends TestCase
         return $decorator->getSqlString($this->platform);
     }
 
-    public function testColumnCharset(): void
+    #[Test]
+    public function columnCharset(): void
     {
         $table = new CreateTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -52,7 +54,8 @@ final class CreateTableDecoratorTest extends TestCase
         self::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
     }
 
-    public function testColumnCollate(): void
+    #[Test]
+    public function columnCollate(): void
     {
         $table = new CreateTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -64,7 +67,8 @@ final class CreateTableDecoratorTest extends TestCase
         self::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
     }
 
-    public function testColumnCharsetAndCollate(): void
+    #[Test]
+    public function columnCharsetAndCollate(): void
     {
         $table = new CreateTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -77,7 +81,8 @@ final class CreateTableDecoratorTest extends TestCase
         self::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci', $sql);
     }
 
-    public function testCharsetAppearsBeforeNotNull(): void
+    #[Test]
+    public function charsetAppearsBeforeNotNull(): void
     {
         $table = new CreateTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -94,7 +99,8 @@ final class CreateTableDecoratorTest extends TestCase
         );
     }
 
-    public function testCharsetAppearsAfterUnsigned(): void
+    #[Test]
+    public function charsetAppearsAfterUnsigned(): void
     {
         $table = new CreateTable('test');
         $col   = new Column\Integer('id');
@@ -107,7 +113,8 @@ final class CreateTableDecoratorTest extends TestCase
         self::assertMatchesRegularExpression('/UNSIGNED CHARACTER SET utf8mb3/', $sql);
     }
 
-    public function testUnsignedOption(): void
+    #[Test]
+    public function unsignedOption(): void
     {
         $table = new CreateTable('test');
         $col   = new Column\Integer('id');
@@ -121,7 +128,8 @@ final class CreateTableDecoratorTest extends TestCase
         self::assertStringContainsString('AUTO_INCREMENT', $sql);
     }
 
-    public function testCommentOption(): void
+    #[Test]
+    public function commentOption(): void
     {
         $table = new CreateTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -133,7 +141,8 @@ final class CreateTableDecoratorTest extends TestCase
         self::assertStringContainsString('COMMENT', $sql);
     }
 
-    public function testFullColumnDefinition(): void
+    #[Test]
+    public function fullColumnDefinition(): void
     {
         $table = new CreateTable('test');
 

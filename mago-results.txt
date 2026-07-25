@@ -1,0 +1,2104 @@
+diff of 'test/integration/Container/PdoStatementFactoryTest.php':
+--- original
++++ modified
+@@ -21,7 +21,8 @@
+ {
+     use TestAsset\SetupTrait;
+
+-    public function testInvokeReturnsPdoStatement(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeReturnsPdoStatement(): void
+     {
+         $factory   = new PdoStatementFactory();
+         $statement = $factory(
+@@ -29,7 +30,7 @@
+             StatementInterface::class,
+             $this->config[AdapterInterface::class]
+         );
+-        self::assertInstanceOf(StatementInterface::class, $statement);
+-        self::assertInstanceOf(Statement::class, $statement);
++        static::assertInstanceOf(StatementInterface::class, $statement);
++        static::assertInstanceOf(Statement::class, $statement);
+     }
+ }
+
+diff of 'test/integration/Pdo/TableGatewayAndAdapterTest.php':
+--- original
++++ modified
+@@ -29,8 +29,9 @@
+     /**
+      * @throws Exception
+      */
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[DataProvider('connections')]
+-    public function testGetOutOfConnections(): void
++    public function getOutOfConnections(): void
+     {
+         $adapter = $this->getAdapter();
+         $adapter->query('SELECT VERSION();');
+@@ -41,7 +42,7 @@
+         $select = $table->getSql()->select()->where(['name' => 'foo']);
+         /** @var AbstractResultSet $result */
+         $result = $table->selectWith($select);
+-        self::assertCount(3, $result->current());
++        static::assertCount(3, $result->current());
+     }
+
+     protected function tearDown(): void
+
+diff of 'test/integration/ConnectionTest.php':
+diff of 'test/unit/Pdo/TestAsset/PdoStubDriver.php':
+--- original
++++ modified
+@@ -5,6 +5,7 @@
+ namespace PhpDbTest\Mysql\Pdo\TestAsset;
+
+ use PDO;
++use SensitiveParameter;
+
+ final class PdoStubDriver extends PDO
+ {
+@@ -23,7 +24,7 @@
+      * @param string $password
+      * @phpstan-ignore constructor.unusedParameter, constructor.unusedParameter, constructor.unusedParameter
+      */
+-    public function __construct(string $dsn, $user, #[\SensitiveParameter] $password)
++    public function __construct(string $dsn, $user, #[SensitiveParameter] $password)
+     {
+     }
+
+
+diff of 'test/integration/Container/PdoDriverInterfaceFactoryTest.php':
+--- original
++++ modified
+@@ -21,7 +21,8 @@
+ {
+     use TestAsset\SetupTrait;
+
+-    public function testInvokeReturnsPdoDriver(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeReturnsPdoDriver(): void
+     {
+         $factory  = new PdoDriverInterfaceFactory();
+         $instance = $factory(
+@@ -30,7 +31,7 @@
+             $this->config[AdapterInterface::class]
+         );
+
+-        self::assertInstanceOf(PdoDriverInterface::class, $instance);
+-        self::assertInstanceOf(Driver::class, $instance);
++        static::assertInstanceOf(PdoDriverInterface::class, $instance);
++        static::assertInstanceOf(Driver::class, $instance);
+     }
+ }
+
+--- original
++++ modified
+@@ -19,7 +19,8 @@
+ {
+     use SetupTrait;
+
+-    public function testConnectionOk(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function connectionOk(): void
+     {
+         /** @var array $config */
+         $config = ['db' => ['driver' => 'Mysqli']];
+@@ -26,8 +27,8 @@
+         /** @var Connection $connection */
+         $connection = $this->getAdapter($config)->getDriver()->getConnection();
+         $connection->connect();
+-        self::assertTrue($connection->isConnected());
++        static::assertTrue($connection->isConnected());
+         $connection->disconnect();
+-        self::assertFalse($connection->isConnected());
++        static::assertFalse($connection->isConnected());
+     }
+ }
+
+diff of 'test/integration/Container/StatementInterfaceFactoryTest.php':
+--- original
++++ modified
+@@ -20,7 +20,8 @@
+ {
+     use TestAsset\SetupTrait;
+
+-    public function testInvokeReturnsMysqliStatement(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeReturnsMysqliStatement(): void
+     {
+         $this->getAdapter([
+             'db' => [
+@@ -38,7 +39,7 @@
+             $this->config[AdapterInterface::class]
+         );
+
+-        self::assertInstanceOf(StatementInterface::class, $statement);
+-        self::assertInstanceOf(Statement::class, $statement);
++        static::assertInstanceOf(StatementInterface::class, $statement);
++        static::assertInstanceOf(Statement::class, $statement);
+     }
+ }
+
+diff of 'test/integration/AdapterPlatformTest.php':
+--- original
++++ modified
+@@ -32,8 +32,9 @@
+         ];
+     }
+
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[DataProvider('quoteValueProvider')]
+-    public function testQuoteValueWithMysqli(string $input, string $expected): void
++    public function quoteValueWithMysqli(string $input, string $expected): void
+     {
+         $this->driver = Driver::class;
+         $adapter      = $this->getAdapter();
+@@ -40,11 +41,12 @@
+
+         $platform = new AdapterPlatform($adapter->getDriver());
+         $value    = $platform->quoteValue($input);
+-        self::assertSame($expected, $value);
++        static::assertSame($expected, $value);
+     }
+
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[DataProvider('quoteValueProvider')]
+-    public function testQuoteValueWithPdoMysql(string $input, string $expected): void
++    public function quoteValueWithPdoMysql(string $input, string $expected): void
+     {
+         $this->driver = PdoDriver::class;
+         $adapter      = $this->getAdapter();
+@@ -51,6 +53,6 @@
+
+         $platform = new AdapterPlatform($adapter->getDriver());
+         $value    = $platform->quoteValue($input);
+-        self::assertSame($expected, $value);
++        static::assertSame($expected, $value);
+     }
+ }
+
+diff of 'test/integration/Container/PlatformInterfaceFactoryTest.php':
+--- original
++++ modified
+@@ -22,7 +22,8 @@
+ {
+     use TestAsset\SetupTrait;
+
+-    public function testInvokeReturnsPlatformInterfaceWhenDbDriverIsPdo(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeReturnsPlatformInterfaceWhenDbDriverIsPdo(): void
+     {
+         $adapter = $this->getAdapter(['driver' => PdoDriver::class]);
+
+@@ -35,7 +36,7 @@
+             $this->config[AdapterInterface::class]
+         );
+
+-        self::assertInstanceOf(PlatformInterface::class, $instance);
+-        self::assertInstanceOf(AdapterPlatform::class, $instance);
++        static::assertInstanceOf(PlatformInterface::class, $instance);
++        static::assertInstanceOf(AdapterPlatform::class, $instance);
+     }
+ }
+
+diff of 'src/Driver.php':
+--- original
++++ modified
+@@ -16,7 +16,7 @@
+ use PhpDb\Adapter\Profiler\ProfilerInterface;
+
+ use function array_intersect_key;
+-use function array_merge;
++
+ use function extension_loaded;
+ use function is_string;
+
+
+diff of 'test/integration/Container/DriverInterfaceFactoryTest.php':
+--- original
++++ modified
+@@ -22,7 +22,8 @@
+ {
+     use TestAsset\SetupTrait;
+
+-    public function testFactoryReturnsMysqliDriver(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function factoryReturnsMysqliDriver(): void
+     {
+         $factory = new DriverInterfaceFactory();
+         $driver  = $factory(
+@@ -30,11 +31,12 @@
+             DriverInterface::class,
+             $this->config[AdapterInterface::class]
+         );
+-        self::assertInstanceOf(DriverInterface::class, $driver);
+-        $this->assertInstanceOf(Driver::class, $driver);
++        static::assertInstanceOf(DriverInterface::class, $driver);
++        static::assertInstanceOf(Driver::class, $driver);
+     }
+
+-    public function testInvokeThrowsExceptionWithoutConnectionConfig(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeThrowsExceptionWithoutConnectionConfig(): void
+     {
+         $this->expectException(ContainerException::class);
+
+
+diff of 'test/integration/Container/MetadataInterfaceFactoryTest.php':
+--- original
++++ modified
+@@ -18,11 +18,12 @@
+ {
+     use SetupTrait;
+
+-    public function testFactoryReturnsMysqlMetadata(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function factoryReturnsMysqlMetadata(): void
+     {
+         $factory  = new MetadataInterfaceFactory();
+         $metadata = $factory($this->container, MetadataInterface::class);
+-        self::assertInstanceOf(MetadataInterface::class, $metadata);
+-        self::assertInstanceOf(Source::class, $metadata);
++        static::assertInstanceOf(MetadataInterface::class, $metadata);
++        static::assertInstanceOf(Source::class, $metadata);
+     }
+ }
+
+diff of 'test/integration/Container/ConnectionInterfaceFactoryTest.php':
+--- original
++++ modified
+@@ -21,7 +21,8 @@
+ {
+     use TestAsset\SetupTrait;
+
+-    public function testInvokeReturnsMysqliConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeReturnsMysqliConnection(): void
+     {
+         $factory    = new ConnectionInterfaceFactory();
+         $connection = $factory(
+@@ -30,11 +31,12 @@
+             $this->config[AdapterInterface::class]
+         );
+
+-        self::assertInstanceOf(ConnectionInterface::class, $connection);
+-        self::assertInstanceOf(Connection::class, $connection);
++        static::assertInstanceOf(ConnectionInterface::class, $connection);
++        static::assertInstanceOf(Connection::class, $connection);
+     }
+
+-    public function testInvokeThrowsExceptionWithoutConnectionConfig(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeThrowsExceptionWithoutConnectionConfig(): void
+     {
+         $this->expectException(InvalidConnectionParametersException::class);
+
+
+diff of 'test/integration/Container/PdoConnectionInterfaceFactoryTest.php':
+--- original
++++ modified
+@@ -23,7 +23,8 @@
+ {
+     use TestAsset\SetupTrait;
+
+-    public function testInvokeReturnsPdoConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeReturnsPdoConnection(): void
+     {
+         $factory  = new PdoConnectionInterfaceFactory();
+         $instance = $factory(
+@@ -31,12 +32,13 @@
+             PdoConnectionInterface::class,
+             $this->config[AdapterInterface::class]
+         );
+-        self::assertInstanceOf(ConnectionInterface::class, $instance);
+-        self::assertInstanceOf(PdoConnectionInterface::class, $instance);
+-        self::assertInstanceOf(Connection::class, $instance);
++        static::assertInstanceOf(ConnectionInterface::class, $instance);
++        static::assertInstanceOf(PdoConnectionInterface::class, $instance);
++        static::assertInstanceOf(Connection::class, $instance);
+     }
+
+-    public function testInvokeThrowsExceptionWithoutConnectionConfig(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function invokeThrowsExceptionWithoutConnectionConfig(): void
+     {
+         $this->expectException(InvalidConnectionParametersException::class);
+
+
+diff of 'test/integration/TableGatewayTest.php':
+--- original
++++ modified
+@@ -23,7 +23,8 @@
+     /**
+      * @see https://github.com/zendframework/zend-db/issues/330
+      */
+-    public function testSelectWithEmptyCurrentWithBufferResult(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function selectWithEmptyCurrentWithBufferResult(): void
+     {
+         /** @var AdapterInterface&Adapter $adapter */
+         $adapter = $this->getAdapter([
+@@ -39,7 +40,7 @@
+         /** @var AbstractResultSet $rowset */
+         $rowset = $tableGateway->select('id = 0');
+
+-        $this->assertNull($rowset->current());
++        static::assertNull($rowset->current());
+
+         $adapter->getDriver()->getConnection()->disconnect();
+     }
+@@ -47,7 +48,8 @@
+     /**
+      * @see https://github.com/zendframework/zend-db/issues/330
+      */
+-    public function testSelectWithEmptyCurrentWithoutBufferResult(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function selectWithEmptyCurrentWithoutBufferResult(): void
+     {
+         /** @var AdapterInterface&Adapter $adapter */
+         $adapter      = $this->getAdapter([
+@@ -61,9 +63,9 @@
+         $tableGateway = new TableGateway('test', $adapter);
+         /** @var AbstractResultSet $rowset */
+         $rowset = $tableGateway->select('id = 0');
+-        $this->assertEquals(false, $rowset->isBuffered());
++        static::assertFalse($rowset->isBuffered());
+
+-        $this->assertNull($rowset->current());
++        static::assertNull($rowset->current());
+
+         $adapter->getDriver()->getConnection()->disconnect();
+     }
+
+diff of 'test/unit/Pdo/ConnectionTest.php':
+--- original
++++ modified
+@@ -34,7 +34,8 @@
+     /**
+      * Test getResource method tries to connect to  the database, it should never return null
+      */
+-    public function testResource(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function resource(): void
+     {
+         $this->expectException(RuntimeException::class);
+         $this->connection->getResource();
+@@ -43,7 +44,8 @@
+     /**
+      * Test getConnectedDsn returns a DSN string if it has been set
+      */
+-    public function testGetDsn(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getDsn(): void
+     {
+         $dsn = "mysql:";
+         $this->connection->setConnectionParameters(['dsn' => $dsn]);
+@@ -53,11 +55,12 @@
+         }
+         $responseString = $this->connection->getDsn();
+
+-        self::assertEquals($dsn, $responseString);
++        static::assertEquals($dsn, $responseString);
+     }
+
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[Group('2622')]
+-    public function testArrayOfConnectionParametersCreatesCorrectDsn(): void
++    public function arrayOfConnectionParametersCreatesCorrectDsn(): void
+     {
+         $connection = new Connection([
+             'driver'      => 'pdo_mysql',
+@@ -72,14 +75,15 @@
+         }
+         $responseString = $connection->getDsn();
+
+-        self::assertStringStartsWith('mysql:', $responseString);
+-        self::assertStringContainsString('charset=utf8', $responseString);
+-        self::assertStringContainsString('dbname=foo', $responseString);
+-        self::assertStringContainsString('port=3306', $responseString);
+-        self::assertStringContainsString('unix_socket=/var/run/mysqld/mysqld.sock', $responseString);
++        static::assertStringStartsWith('mysql:', $responseString);
++        static::assertStringContainsString('charset=utf8', $responseString);
++        static::assertStringContainsString('dbname=foo', $responseString);
++        static::assertStringContainsString('port=3306', $responseString);
++        static::assertStringContainsString('unix_socket=/var/run/mysqld/mysqld.sock', $responseString);
+     }
+
+-    public function testHostnameAndUnixSocketThrowsInvalidConnectionParametersException(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function hostnameAndUnixSocketThrowsInvalidConnectionParametersException(): void
+     {
+         $this->expectException(InvalidConnectionParametersException::class);
+         $this->expectExceptionMessage(
+
+diff of 'test/unit/Pdo/DriverTest.php':
+--- original
++++ modified
+@@ -58,11 +58,12 @@
+         ];
+     }
+
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[DataProvider('getParamsAndType')]
+-    public function testFormatParameterName(int|string $name, ?string $type, string $expected): void
++    public function formatParameterName(int|string $name, ?string $type, string $expected): void
+     {
+         $result = $this->pdo->formatParameterName($name, $type);
+-        $this->assertEquals($expected, $result);
++        static::assertEquals($expected, $result);
+     }
+
+     /** @psalm-return array<array-key, array{0: string}> */
+@@ -76,21 +77,24 @@
+         ];
+     }
+
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[DataProvider('getInvalidParamName')]
+-    public function testFormatParameterNameWithInvalidCharacters(string $name): void
++    public function formatParameterNameWithInvalidCharacters(string $name): void
+     {
+         $this->expectException(RuntimeException::class);
+         $this->pdo->formatParameterName($name);
+     }
+
+-    public function testGetResultPrototype(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getResultPrototype(): void
+     {
+         $resultPrototype = $this->pdo->getResultPrototype();
+
+-        self::assertInstanceOf(Result::class, $resultPrototype);
++        static::assertInstanceOf(Result::class, $resultPrototype);
+     }
+
+-    public function testCreateResultPassesNullRowCount(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function createResultPassesNullRowCount(): void
+     {
+         $pdoStatement = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $pdoStatement->expects($this->once())
+@@ -103,7 +107,7 @@
+
+         $result = $driver->createResult($pdoStatement);
+
+-        self::assertInstanceOf(Result::class, $result);
+-        self::assertSame(4, $result->count());
++        static::assertInstanceOf(Result::class, $result);
++        static::assertSame(4, $result->count());
+     }
+ }
+
+diff of 'test/unit/Pdo/StatementIntegrationTest.php':
+--- original
++++ modified
+@@ -51,42 +51,46 @@
+     {
+     }
+
+-    public function testStatementExecuteWillConvertPhpBoolToPdoBoolWhenBinding(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function statementExecuteWillConvertPhpBoolToPdoBoolWhenBinding(): void
+     {
+         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
+-            $this->equalTo(':foo'),
+-            $this->equalTo(false),
+-            $this->equalTo(PDO::PARAM_BOOL)
++            static::equalTo(':foo'),
++            static::equalTo(false),
++            static::equalTo(PDO::PARAM_BOOL)
+         );
+         $this->statement->execute(['foo' => false]);
+     }
+
+-    public function testStatementExecuteWillUsePdoStrByDefaultWhenBinding(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function statementExecuteWillUsePdoStrByDefaultWhenBinding(): void
+     {
+         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
+-            $this->equalTo(':foo'),
+-            $this->equalTo('bar'),
+-            $this->equalTo(PDO::PARAM_STR)
++            static::equalTo(':foo'),
++            static::equalTo('bar'),
++            static::equalTo(PDO::PARAM_STR)
+         );
+         $this->statement->execute(['foo' => 'bar']);
+     }
+
+-    public function testStatementExecuteWillUsePdoStrForStringIntegerWhenBinding(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function statementExecuteWillUsePdoStrForStringIntegerWhenBinding(): void
+     {
+         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
+-            $this->equalTo(':foo'),
+-            $this->equalTo('123'),
+-            $this->equalTo(PDO::PARAM_STR)
++            static::equalTo(':foo'),
++            static::equalTo('123'),
++            static::equalTo(PDO::PARAM_STR)
+         );
+         $this->statement->execute(['foo' => '123']);
+     }
+
+-    public function testStatementExecuteWillUsePdoIntForIntWhenBinding(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function statementExecuteWillUsePdoIntForIntWhenBinding(): void
+     {
+         $this->pdoStatementMock->expects($this->any())->method('bindParam')->with(
+-            $this->equalTo(':foo'),
+-            $this->equalTo(123),
+-            $this->equalTo(PDO::PARAM_INT)
++            static::equalTo(':foo'),
++            static::equalTo(123),
++            static::equalTo(PDO::PARAM_INT)
+         );
+         $this->statement->execute(['foo' => 123]);
+     }
+
+diff of 'test/integration/Pdo/TableGatewayTest.php':
+--- original
++++ modified
+@@ -29,29 +29,32 @@
+ {
+     use SetupTrait;
+
+-    public function testConstructor(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function constructor(): void
+     {
+         /** @var AdapterInterface&Adapter $adapter */
+         $adapter      = $this->getAdapter(['db' => ['driver' => Driver::class]]);
+         $tableGateway = new TableGateway('test', $adapter);
+-        $this->assertInstanceOf(TableGateway::class, $tableGateway);
++        static::assertInstanceOf(TableGateway::class, $tableGateway);
+     }
+
+-    public function testSelect(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function select(): void
+     {
+         $tableGateway = new TableGateway('test', $this->getAdapter(['db' => ['driver' => Driver::class]]));
+         /** @var ResultSet $rowset */
+         $rowset = $tableGateway->select();
+-        $this->assertTrue(count($rowset) > 0);
++        static::assertTrue(count($rowset) > 0);
+         /** @var ArrayObject $row */
+         foreach ($rowset as $row) {
+-            $this->assertTrue(isset($row->id));
+-            $this->assertNotEmpty(isset($row->name));
+-            $this->assertNotEmpty(isset($row->value));
++            static::assertTrue(isset($row->id));
++            static::assertNotEmpty(isset($row->name));
++            static::assertNotEmpty(isset($row->value));
+         }
+     }
+
+-    public function testInsert(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function insert(): void
+     {
+         $tableGateway = new TableGateway('test', $this->getAdapter(['db' => ['driver' => Driver::class]]));
+
+@@ -61,7 +64,7 @@
+             'value' => 'test_value',
+         ];
+         $affectedRows = $tableGateway->insert($data);
+-        $this->assertEquals(1, $affectedRows);
++        static::assertSame(1, $affectedRows);
+         /** @var ResultSet $rowSet */
+         $rowSet = $tableGateway->select(['id' => $tableGateway->getLastInsertValue()]);
+         /** @var ArrayObject $row */
+@@ -68,7 +71,7 @@
+         $row = $rowSet->current();
+
+         foreach ($data as $key => $value) {
+-            $this->assertEquals($row->$key, $value);
++            static::assertEquals($row->$key, $value);
+         }
+     }
+
+@@ -76,7 +79,8 @@
+      * @see https://github.com/zendframework/zend-db/issues/35
+      * @see https://github.com/zendframework/zend-db/pull/178
+      */
+-    public function testInsertWithExtendedCharsetFieldName(): int|string
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function insertWithExtendedCharsetFieldName(): int|string
+     {
+         $tableGateway = new TableGateway('test_charset', $this->getAdapter(['db' => ['driver' => Driver::class]]));
+
+@@ -84,13 +88,14 @@
+             'field$' => 'test_value1',
+             'field_' => 'test_value2',
+         ]);
+-        $this->assertEquals(1, $affectedRows);
++        static::assertSame(1, $affectedRows);
+
+         return $tableGateway->getLastInsertValue();
+     }
+
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[Depends('testInsertWithExtendedCharsetFieldName')]
+-    public function testUpdateWithExtendedCharsetFieldName(mixed $id): void
++    public function updateWithExtendedCharsetFieldName(mixed $id): void
+     {
+         $tableGateway = new TableGateway('test_charset', $this->getAdapter(['db' => ['driver' => Driver::class]]));
+
+@@ -99,7 +104,7 @@
+             'field_' => 'test_value4',
+         ];
+         $affectedRows = $tableGateway->update($data, ['id' => $id]);
+-        $this->assertEquals(1, $affectedRows);
++        static::assertSame(1, $affectedRows);
+         /** @var ResultSet $rowSet */
+         $rowSet = $tableGateway->select(['id' => $id]);
+         /** @var ArrayObject $row */
+@@ -106,12 +111,13 @@
+         $row = $rowSet->current();
+
+         foreach ($data as $key => $value) {
+-            $this->assertEquals($row->$key, $value);
++            static::assertEquals($row->$key, $value);
+         }
+     }
+
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[DataProvider('tableProvider')]
+-    public function testTableGatewayWithMetadataFeature(array|string|TableIdentifier $table): void
++    public function tableGatewayWithMetadataFeature(array|string|TableIdentifier $table): void
+     {
+         /** @var AdapterInterface&SchemaAwareInterface&Adapter $adapter */
+         $adapter      = $this->getAdapter(['db' => ['driver' => Driver::class]]);
+@@ -123,8 +129,8 @@
+             )
+         );
+
+-        self::assertInstanceOf(TableGateway::class, $tableGateway);
+-        self::assertSame($table, $tableGateway->getTable());
++        static::assertInstanceOf(TableGateway::class, $tableGateway);
++        static::assertSame($table, $tableGateway->getTable());
+     }
+
+     /** @psalm-return array<string, array{0: mixed}> */
+
+diff of 'test/integration/Pdo/AbstractAdapterTestCase.php':
+--- original
++++ modified
+@@ -23,23 +23,26 @@
+ {
+     use SetupTrait;
+
+-    public function testConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function connection(): void
+     {
+         /** @var ConnectionInterface $connection */
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+-        $this->assertInstanceOf(ConnectionInterface::class, $connection);
++        static::assertInstanceOf(ConnectionInterface::class, $connection);
+     }
+
+-    public function testGetCurrentSchema(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getCurrentSchema(): void
+     {
+         /** @var AdapterInterface&SchemaAwareInterface&Adapter $adapter */
+         $adapter = $this->getAdapter();
+         $schema  = $adapter->getCurrentSchema();
+-        self::assertIsString($schema);
+-        self::assertNotEmpty($schema);
++        static::assertIsString($schema);
++        static::assertNotEmpty($schema);
+     }
+
+-    public function testDriverDisconnectAfterQuoteWithPlatform(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function driverDisconnectAfterQuoteWithPlatform(): void
+     {
+         $isTcpConnection = $this->isTcpConnection();
+
+@@ -50,21 +53,21 @@
+             ],
+         ]);
+         $adapter->getDriver()->getConnection()->connect();
+-        self::assertTrue($adapter->getDriver()->getConnection()->isConnected());
++        static::assertTrue($adapter->getDriver()->getConnection()->isConnected());
+         if ($isTcpConnection) {
+-            self::assertTrue($adapter->getDriver()->getConnection()->isConnected());
++            static::assertTrue($adapter->getDriver()->getConnection()->isConnected());
+         }
+
+         $adapter->getDriver()->getConnection()->disconnect();
+-        self::assertFalse($adapter->getDriver()->getConnection()->isConnected());
++        static::assertFalse($adapter->getDriver()->getConnection()->isConnected());
+         if ($isTcpConnection) {
+-            self::assertFalse($adapter->getDriver()->getConnection()->isConnected());
++            static::assertFalse($adapter->getDriver()->getConnection()->isConnected());
+         }
+
+         $adapter->getDriver()->getConnection()->connect();
+-        self::assertTrue($adapter->getDriver()->getConnection()->isConnected());
++        static::assertTrue($adapter->getDriver()->getConnection()->isConnected());
+         if ($isTcpConnection) {
+-            self::assertTrue($adapter->getDriver()->getConnection()->isConnected());
++            static::assertTrue($adapter->getDriver()->getConnection()->isConnected());
+         }
+
+         $adapter->getPlatform()->quoteValue('test');
+@@ -71,9 +74,9 @@
+
+         $adapter->getDriver()->getConnection()->disconnect();
+
+-        self::assertFalse($adapter->getDriver()->getConnection()->isConnected());
++        static::assertFalse($adapter->getDriver()->getConnection()->isConnected());
+         if ($isTcpConnection) {
+-            self::assertFalse($adapter->getDriver()->getConnection()->isConnected());
++            static::assertFalse($adapter->getDriver()->getConnection()->isConnected());
+         }
+     }
+
+
+diff of 'test/integration/Pdo/QueryTest.php':
+--- original
++++ modified
+@@ -48,19 +48,20 @@
+     /**
+      * @throws Exception
+      */
++    #[\PHPUnit\Framework\Attributes\Test]
+     #[DataProvider('getQueriesWithRowResult')]
+-    public function testQuery(string $query, array $params, array $expected): void
++    public function query(string $query, array $params, array $expected): void
+     {
+         /** @todo Have AdapterInterface implement query */
+         $result = $this->getAdapter()->query($query, $params);
+-        $this->assertInstanceOf(ResultSet::class, $result);
++        static::assertInstanceOf(ResultSet::class, $result);
+         $current = $result->current();
+         // test as array value
+-        $this->assertEquals($expected, (array) $current);
++        static::assertEquals($expected, (array) $current);
+         // test as object value
+         /** @var string $value */
+         foreach ($expected as $key => $value) {
+-            $this->assertEquals($value, $current->$key);
++            static::assertEquals($value, $current->$key);
+         }
+     }
+
+@@ -69,48 +70,54 @@
+      *
+      * @throws Exception
+      */
+-    public function testSetSessionTimeZone(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function setSessionTimeZone(): void
+     {
+         $result = $this->getAdapter()->query('SET @@session.time_zone = :tz', [':tz' => 'SYSTEM']);
+-        $this->assertInstanceOf(PdoResult::class, $result);
++        static::assertInstanceOf(PdoResult::class, $result);
+     }
+
+     /**
+      * @throws Exception
+      */
+-    public function testSelectWithNotPermittedBindParamName(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function selectWithNotPermittedBindParamName(): void
+     {
+         $this->expectException(RuntimeException::class);
+         $this->getAdapter()->query('SET @@session.time_zone = :tz$', [':tz$' => 'SYSTEM']);
+     }
+
+-    public function testSelectResultCountReturnsActualRowCount(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function selectResultCountReturnsActualRowCount(): void
+     {
+         $result = $this->getAdapter()->query('SELECT * FROM test WHERE value = ?', ['bar']);
+-        $this->assertInstanceOf(ResultSet::class, $result);
+-        self::assertSame(3, $result->count());
++        static::assertInstanceOf(ResultSet::class, $result);
++        static::assertSame(3, $result->count());
+     }
+
+-    public function testSelectResultCountWithWhereClause(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function selectResultCountWithWhereClause(): void
+     {
+         $result = $this->getAdapter()->query('SELECT * FROM test WHERE name = ?', ['foo']);
+-        $this->assertInstanceOf(ResultSet::class, $result);
+-        self::assertSame(1, $result->count());
++        static::assertInstanceOf(ResultSet::class, $result);
++        static::assertSame(1, $result->count());
+     }
+
+-    public function testSelectResultCountReturnsZeroForNoResults(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function selectResultCountReturnsZeroForNoResults(): void
+     {
+         $result = $this->getAdapter()->query('SELECT * FROM test WHERE name = ?', ['nonexistent']);
+-        $this->assertInstanceOf(ResultSet::class, $result);
+-        self::assertSame(0, $result->count());
++        static::assertInstanceOf(ResultSet::class, $result);
++        static::assertSame(0, $result->count());
+     }
+
+     /**
+      * @see https://github.com/laminas/laminas-db/issues/47
+      */
+-    public function testNamedParameters(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function namedParameters(): void
+     {
+-        $this->assertNotNull($this->adapter);
++        static::assertNotNull($this->adapter);
+         $sql = new Sql($this->adapter);
+
+         $insert = $sql->update('test');
+@@ -120,7 +127,7 @@
+         ])->where(['id' => ':id']);
+         /** @var StatementInterface $stmt */
+         $stmt = $sql->prepareStatementForSqlObject($insert);
+-        $this->assertInstanceOf(StatementInterface::class, $stmt);
++        static::assertInstanceOf(StatementInterface::class, $stmt);
+
+         //positional parameters
+         $stmt->execute([
+
+diff of 'test/unit/Pdo/StatementTest.php':
+--- original
++++ modified
+@@ -53,48 +53,55 @@
+     {
+     }
+
+-    public function testSetDriver(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function setDriver(): void
+     {
+-        self::assertInstanceOf(PdoDriverInterface::class, $this->pdo);
+-        self::assertEquals($this->statement, $this->statement->setDriver($this->pdo));
++        static::assertInstanceOf(PdoDriverInterface::class, $this->pdo);
++        static::assertEquals($this->statement, $this->statement->setDriver($this->pdo));
+     }
+
+-    public function testSetParameterContainer(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function setParameterContainer(): void
+     {
+-        self::assertSame($this->statement, $this->statement->setParameterContainer(new ParameterContainer()));
++        static::assertSame($this->statement, $this->statement->setParameterContainer(new ParameterContainer()));
+     }
+
+     /**
+      * @todo Implement testGetParameterContainer().
+      */
+-    public function testGetParameterContainer(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getParameterContainer(): void
+     {
+         $container = new ParameterContainer();
+         $this->statement->setParameterContainer($container);
+-        self::assertSame($container, $this->statement->getParameterContainer());
++        static::assertSame($container, $this->statement->getParameterContainer());
+     }
+
+-    public function testGetResource(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getResource(): void
+     {
+         $stmt = $this->createMock(PDOStatement::class);
+         $this->statement->setResource($stmt);
+
+-        self::assertSame($stmt, $this->statement->getResource());
++        static::assertSame($stmt, $this->statement->getResource());
+     }
+
+-    public function testSetSql(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function setSql(): void
+     {
+         $this->statement->setSql('SELECT 1');
+-        self::assertEquals('SELECT 1', $this->statement->getSql());
++        static::assertSame('SELECT 1', $this->statement->getSql());
+     }
+
+-    public function testGetSql(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getSql(): void
+     {
+         $this->statement->setSql('SELECT 1');
+-        self::assertEquals('SELECT 1', $this->statement->getSql());
++        static::assertSame('SELECT 1', $this->statement->getSql());
+     }
+
+-    public function testPrepare(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function prepare(): void
+     {
+         $mockPdoStatement = $this->createMock(PDOStatement::class);
+         $pdo              = new TestAsset\CtorlessPdo($mockPdoStatement);
+@@ -101,12 +108,13 @@
+         $this->statement->initialize($pdo);
+
+         $result = $this->statement->prepare('SELECT 1');
+-        self::assertInstanceOf(Statement::class, $result);
++        static::assertInstanceOf(Statement::class, $result);
+     }
+
+-    public function testIsPrepared(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function isPrepared(): void
+     {
+-        self::assertFalse($this->statement->isPrepared());
++        static::assertFalse($this->statement->isPrepared());
+
+         $mockPdoStatement = $this->createMock(PDOStatement::class);
+         $pdo              = new TestAsset\CtorlessPdo($mockPdoStatement);
+@@ -113,10 +121,11 @@
+         $this->statement->initialize($pdo);
+         $this->statement->prepare('SELECT 1');
+
+-        self::assertTrue($this->statement->isPrepared());
++        static::assertTrue($this->statement->isPrepared());
+     }
+
+-    public function testExecute(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function execute(): void
+     {
+         $mockPdoStatement = $this->createMock(PDOStatement::class);
+         $pdo              = new TestAsset\CtorlessPdo($mockPdoStatement);
+@@ -124,6 +133,6 @@
+         $this->statement->prepare('SELECT 1');
+
+         $result = $this->statement->execute();
+-        self::assertInstanceOf(ResultInterface::class, $result);
++        static::assertInstanceOf(ResultInterface::class, $result);
+     }
+ }
+
+diff of 'test/unit/Pdo/ResultTest.php':
+--- original
++++ modified
+@@ -24,20 +24,22 @@
+     /**
+      * Tests current method returns same data on consecutive calls.
+      */
+-    public function testCurrent(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function current(): void
+     {
+         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $mock->expects($this->any())
+             ->method('fetch')
+-            ->willReturnCallback(static fn() => uniqid());
++            ->willReturnCallback(uniqid(...));
+
+         $result = new Result();
+         $result->initialize($mock, null);
+
+-        self::assertEquals($result->current(), $result->current());
++        static::assertEquals($result->current(), $result->current());
+     }
+
+-    public function testFetchModeException(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function fetchModeException(): void
+     {
+         $result = new Result();
+
+@@ -48,7 +50,8 @@
+     /**
+      * Tests whether the fetch mode was set properly and
+      */
+-    public function testFetchModeAnonymousObject(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function fetchModeAnonymousObject(): void
+     {
+         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $mock->expects($this->any())
+@@ -59,14 +62,15 @@
+         $result->initialize($mock, null);
+         $result->setFetchMode(PDO::FETCH_OBJ);
+
+-        self::assertEquals(5, $result->getFetchMode());
+-        self::assertInstanceOf('stdClass', $result->current());
++        static::assertSame(5, $result->getFetchMode());
++        static::assertInstanceOf('stdClass', $result->current());
+     }
+
+     /**
+      * Tests whether the fetch mode has a broader range
+      */
+-    public function testFetchModeRange(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function fetchModeRange(): void
+     {
+         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $mock->expects($this->any())
+@@ -75,11 +79,12 @@
+         $result = new Result();
+         $result->initialize($mock, null);
+         $result->setFetchMode(PDO::FETCH_NAMED);
+-        self::assertEquals(11, $result->getFetchMode());
+-        self::assertInstanceOf('stdClass', $result->current());
++        static::assertSame(11, $result->getFetchMode());
++        static::assertInstanceOf('stdClass', $result->current());
+     }
+
+-    public function testCountWithNullRowCountDelegatesToPdoStatement(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function countWithNullRowCountDelegatesToPdoStatement(): void
+     {
+         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $mock->expects($this->once())
+@@ -89,10 +94,11 @@
+         $result = new Result();
+         $result->initialize($mock, null, null);
+
+-        self::assertSame(4, $result->count());
++        static::assertSame(4, $result->count());
+     }
+
+-    public function testCountWithZeroRowCountReturnsZeroWithoutQueryingPdo(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function countWithZeroRowCountReturnsZeroWithoutQueryingPdo(): void
+     {
+         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $mock->expects($this->never())
+@@ -101,10 +107,11 @@
+         $result = new Result();
+         $result->initialize($mock, null, 0);
+
+-        self::assertSame(0, $result->count());
++        static::assertSame(0, $result->count());
+     }
+
+-    public function testCountWithIntRowCountReturnsValueWithoutQueryingPdo(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function countWithIntRowCountReturnsValueWithoutQueryingPdo(): void
+     {
+         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $mock->expects($this->never())
+@@ -113,10 +120,11 @@
+         $result = new Result();
+         $result->initialize($mock, null, 7);
+
+-        self::assertSame(7, $result->count());
++        static::assertSame(7, $result->count());
+     }
+
+-    public function testCountWithClosureRowCountInvokesClosure(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function countWithClosureRowCountInvokesClosure(): void
+     {
+         $mock = $this->getMockBuilder(PDOStatement::class)->getMock();
+         $mock->expects($this->never())
+@@ -125,10 +133,11 @@
+         $result = new Result();
+         $result->initialize($mock, null, static fn() => 3);
+
+-        self::assertSame(3, $result->count());
++        static::assertSame(3, $result->count());
+     }
+
+-    public function testMultipleRewind(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function multipleRewind(): void
+     {
+         $data     = [
+             ['test' => 1],
+@@ -149,13 +158,13 @@
+         $result->rewind();
+         $result->rewind();
+
+-        $this->assertEquals(0, $result->key());
+-        $this->assertEquals(1, $position);
+-        $this->assertEquals($data[0], $result->current());
++        static::assertSame(0, $result->key());
++        static::assertSame(1, $position);
++        static::assertEquals($data[0], $result->current());
+
+         $result->next();
+-        $this->assertEquals(1, $result->key());
+-        $this->assertEquals(2, $position);
+-        $this->assertEquals($data[1], $result->current());
++        static::assertSame(1, $result->key());
++        static::assertSame(2, $position);
++        static::assertEquals($data[1], $result->current());
+     }
+ }
+
+diff of 'test/integration/Pdo/ConnectionTest.php':
+--- original
++++ modified
+@@ -32,121 +32,130 @@
+ {
+     use SetupTrait;
+
+-    public function testGetResource(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getResource(): void
+     {
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+-        self::assertInstanceOf(PDO::class, $connection->getResource());
++        static::assertInstanceOf(PDO::class, $connection->getResource());
+     }
+
+-    public function testExecute(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function execute(): void
+     {
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         /** @var ResultInterface&Result $result */
+         $result = $connection->execute('SELECT \'foo\'');
+-        self::assertInstanceOf(ResultInterface::class, $result);
+-        self::assertInstanceOf(Result::class, $result);
++        static::assertInstanceOf(ResultInterface::class, $result);
++        static::assertInstanceOf(Result::class, $result);
+     }
+
+-    public function testPrepare(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function prepare(): void
+     {
+         /** @var ConnectionInterface&PdoConnectionInterface&AbstractConnection&AbstractPdoConnection&Connection $connection */
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         /** @var StatementInterface&Statement $statement */
+         $statement = $connection->prepare('SELECT \'foo\'');
+-        self::assertInstanceOf(StatementInterface::class, $statement);
+-        self::assertInstanceOf(Statement::class, $statement);
++        static::assertInstanceOf(StatementInterface::class, $statement);
++        static::assertInstanceOf(Statement::class, $statement);
+     }
+
+-    public function testGetLastGeneratedValue(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getLastGeneratedValue(): void
+     {
+         /** @var ConnectionInterface&PdoConnectionInterface&AbstractConnection&AbstractPdoConnection&Connection $connection */
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         $connection->connect();
+         $lastId = (int) $connection->getLastGeneratedValue();
+-        self::assertIsInt($lastId);
++        static::assertIsInt($lastId);
+         $connection->disconnect();
+     }
+
+-    public function testConnectMethodReturnsConnectionInterface(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function connectMethodReturnsConnectionInterface(): void
+     {
+         /** @var ConnectionInterface&PdoConnectionInterface&AbstractConnection&AbstractPdoConnection&Connection $connection */
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+-        self::assertInstanceOf(ConnectionInterface::class, $connection->connect());
++        static::assertInstanceOf(ConnectionInterface::class, $connection->connect());
+         $connection->disconnect();
+     }
+
+-    public function testBeginTransaction(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function beginTransaction(): void
+     {
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         $connection->connect();
+
+-        self::assertTrue($connection->isConnected());
+-        self::assertFalse($connection->inTransaction());
++        static::assertTrue($connection->isConnected());
++        static::assertFalse($connection->inTransaction());
+
+         $result = $connection->beginTransaction();
+
+-        self::assertInstanceOf(Connection::class, $result);
+-        self::assertTrue($connection->inTransaction());
++        static::assertInstanceOf(Connection::class, $result);
++        static::assertTrue($connection->inTransaction());
+
+         $connection->rollback();
+-        self::assertFalse($connection->inTransaction());
++        static::assertFalse($connection->inTransaction());
+         $connection->disconnect();
+     }
+
+-    public function testCommit(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function commit(): void
+     {
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         $connection->connect();
+-        self::assertTrue($connection->isConnected());
++        static::assertTrue($connection->isConnected());
+
+         $connection->beginTransaction();
+-        self::assertTrue($connection->inTransaction());
++        static::assertTrue($connection->inTransaction());
+
+         $connection->execute("INSERT INTO test (name, value) VALUES ('tx_commit', 'test')");
+
+         $result = $connection->commit();
+-        self::assertInstanceOf(Connection::class, $result);
+-        self::assertFalse($connection->inTransaction());
++        static::assertInstanceOf(Connection::class, $result);
++        static::assertFalse($connection->inTransaction());
+
+         $result = $connection->execute("SELECT COUNT(*) AS cnt FROM test WHERE name = 'tx_commit'");
+-        self::assertSame(1, $result->getResource()->fetchColumn());
++        static::assertSame(1, $result->getResource()->fetchColumn());
+
+         $connection->execute("DELETE FROM test WHERE name = 'tx_commit'");
+         $connection->disconnect();
+     }
+
+-    public function testRollback(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function rollback(): void
+     {
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         $connection->connect();
+-        self::assertTrue($connection->isConnected());
++        static::assertTrue($connection->isConnected());
+
+         $connection->beginTransaction();
+-        self::assertTrue($connection->inTransaction());
++        static::assertTrue($connection->inTransaction());
+
+         $connection->execute("INSERT INTO test (name, value) VALUES ('tx_rollback', 'test')");
+
+         $result = $connection->rollback();
+-        self::assertInstanceOf(Connection::class, $result);
+-        self::assertFalse($connection->inTransaction());
++        static::assertInstanceOf(Connection::class, $result);
++        static::assertFalse($connection->inTransaction());
+
+         $result = $connection->execute("SELECT COUNT(*) AS cnt FROM test WHERE name = 'tx_rollback'");
+-        self::assertSame(0, $result->getResource()->fetchColumn());
++        static::assertSame(0, $result->getResource()->fetchColumn());
+
+         $connection->disconnect();
+     }
+
+-    public function testAutocommitRestoredAfterCommit(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function autocommitRestoredAfterCommit(): void
+     {
+         /** @var Connection $connection */
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         $connection->connect();
+-        self::assertTrue($connection->isConnected());
++        static::assertTrue($connection->isConnected());
+
+         $connection->beginTransaction();
+-        self::assertTrue($connection->inTransaction());
++        static::assertTrue($connection->inTransaction());
+         $connection->commit();
+-        self::assertFalse($connection->inTransaction());
++        static::assertFalse($connection->inTransaction());
+
+         $connection->execute("INSERT INTO test (name, value) VALUES ('tx_autocommit', 'test')");
+
+@@ -154,23 +163,24 @@
+
+         $connection->connect();
+         $result = $connection->execute("SELECT COUNT(*) AS cnt FROM test WHERE name = 'tx_autocommit'");
+-        self::assertSame(1, $result->getResource()->fetchColumn());
++        static::assertSame(1, $result->getResource()->fetchColumn());
+
+         $connection->execute("DELETE FROM test WHERE name = 'tx_autocommit'");
+         $connection->disconnect();
+     }
+
+-    public function testAutocommitRestoredAfterRollback(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function autocommitRestoredAfterRollback(): void
+     {
+         /** @var Connection $connection */
+         $connection = $this->getAdapter()->getDriver()->getConnection();
+         $connection->connect();
+-        self::assertTrue($connection->isConnected());
++        static::assertTrue($connection->isConnected());
+
+         $connection->beginTransaction();
+-        self::assertTrue($connection->inTransaction());
++        static::assertTrue($connection->inTransaction());
+         $connection->rollback();
+-        self::assertFalse($connection->inTransaction());
++        static::assertFalse($connection->inTransaction());
+
+         $connection->execute("INSERT INTO test (name, value) VALUES ('tx_autocommit_rb', 'test')");
+
+@@ -178,7 +188,7 @@
+
+         $connection->connect();
+         $result = $connection->execute("SELECT COUNT(*) AS cnt FROM test WHERE name = 'tx_autocommit_rb'");
+-        self::assertSame(1, $result->getResource()->fetchColumn());
++        static::assertSame(1, $result->getResource()->fetchColumn());
+
+         $connection->execute("DELETE FROM test WHERE name = 'tx_autocommit_rb'");
+         $connection->disconnect();
+
+diff of 'test/unit/Pdo/ConnectionTransactionsTest.php':
+--- original
++++ modified
+@@ -35,88 +35,96 @@
+         $this->wrapper = new ConnectionWrapper();
+     }
+
+-    public function testBeginTransactionReturnsInstanceOfConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function beginTransactionReturnsInstanceOfConnection(): void
+     {
+-        self::assertInstanceOf(Connection::class, $this->wrapper->beginTransaction());
++        static::assertInstanceOf(Connection::class, $this->wrapper->beginTransaction());
+     }
+
+-    public function testBeginTransactionSetsInTransactionAtTrue(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function beginTransactionSetsInTransactionAtTrue(): void
+     {
+         $this->wrapper->beginTransaction();
+-        self::assertTrue($this->wrapper->inTransaction());
++        static::assertTrue($this->wrapper->inTransaction());
+     }
+
+-    public function testCommitReturnsInstanceOfConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function commitReturnsInstanceOfConnection(): void
+     {
+         $this->wrapper->beginTransaction();
+-        self::assertInstanceOf(Connection::class, $this->wrapper->commit());
++        static::assertInstanceOf(Connection::class, $this->wrapper->commit());
+     }
+
+-    public function testCommitSetsInTransactionAtFalse(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function commitSetsInTransactionAtFalse(): void
+     {
+         $this->wrapper->beginTransaction();
+         $this->wrapper->commit();
+-        self::assertFalse($this->wrapper->inTransaction());
++        static::assertFalse($this->wrapper->inTransaction());
+     }
+
+     /**
+      * Standalone commit after a SET autocommit=0;
+      */
+-    public function testCommitWithoutBeginReturnsInstanceOfConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function commitWithoutBeginReturnsInstanceOfConnection(): void
+     {
+-        self::assertInstanceOf(Connection::class, $this->wrapper->commit());
++        static::assertInstanceOf(Connection::class, $this->wrapper->commit());
+     }
+
+-    public function testNestedTransactionsCommit(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function nestedTransactionsCommit(): void
+     {
+         $nested = 0;
+
+-        self::assertFalse($this->wrapper->inTransaction());
++        static::assertFalse($this->wrapper->inTransaction());
+
+         // 1st transaction
+         $this->wrapper->beginTransaction();
+-        self::assertTrue($this->wrapper->inTransaction());
+-        self::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
++        static::assertTrue($this->wrapper->inTransaction());
++        static::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
+
+         // 2nd transaction
+         $this->wrapper->beginTransaction();
+-        self::assertTrue($this->wrapper->inTransaction());
+-        self::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
++        static::assertTrue($this->wrapper->inTransaction());
++        static::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
+
+         // 1st commit
+         $this->wrapper->commit();
+-        self::assertTrue($this->wrapper->inTransaction());
+-        self::assertSame(--$nested, $this->wrapper->getNestedTransactionsCount());
++        static::assertTrue($this->wrapper->inTransaction());
++        static::assertSame(--$nested, $this->wrapper->getNestedTransactionsCount());
+
+         // 2nd commit
+         $this->wrapper->commit();
+-        self::assertFalse($this->wrapper->inTransaction());
+-        self::assertSame(--$nested, $this->wrapper->getNestedTransactionsCount());
++        static::assertFalse($this->wrapper->inTransaction());
++        static::assertSame(--$nested, $this->wrapper->getNestedTransactionsCount());
+     }
+
+-    public function testNestedTransactionsRollback(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function nestedTransactionsRollback(): void
+     {
+         $nested = 0;
+
+-        self::assertFalse($this->wrapper->inTransaction());
++        static::assertFalse($this->wrapper->inTransaction());
+
+         // 1st transaction
+         $this->wrapper->beginTransaction();
+-        self::assertTrue($this->wrapper->inTransaction());
+-        self::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
++        static::assertTrue($this->wrapper->inTransaction());
++        static::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
+
+         // 2nd transaction
+         $this->wrapper->beginTransaction();
+-        self::assertTrue($this->wrapper->inTransaction());
+-        self::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
++        static::assertTrue($this->wrapper->inTransaction());
++        static::assertSame(++$nested, $this->wrapper->getNestedTransactionsCount());
+
+         // Rollback
+         $this->wrapper->rollback();
+-        self::assertFalse($this->wrapper->inTransaction());
+-        self::assertSame(0, $this->wrapper->getNestedTransactionsCount());
++        static::assertFalse($this->wrapper->inTransaction());
++        static::assertSame(0, $this->wrapper->getNestedTransactionsCount());
+     }
+
+-    public function testRollbackDisconnectedThrowsException(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function rollbackDisconnectedThrowsException(): void
+     {
+         $this->wrapper->disconnect();
+
+@@ -125,20 +133,23 @@
+         $this->wrapper->rollback();
+     }
+
+-    public function testRollbackReturnsInstanceOfConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function rollbackReturnsInstanceOfConnection(): void
+     {
+         $this->wrapper->beginTransaction();
+-        self::assertInstanceOf(Connection::class, $this->wrapper->rollback());
++        static::assertInstanceOf(Connection::class, $this->wrapper->rollback());
+     }
+
+-    public function testRollbackSetsInTransactionAtFalse(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function rollbackSetsInTransactionAtFalse(): void
+     {
+         $this->wrapper->beginTransaction();
+         $this->wrapper->rollback();
+-        self::assertFalse($this->wrapper->inTransaction());
++        static::assertFalse($this->wrapper->inTransaction());
+     }
+
+-    public function testRollbackWithoutBeginThrowsException(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function rollbackWithoutBeginThrowsException(): void
+     {
+         $this->expectException(RuntimeException::class);
+         $this->expectExceptionMessage('Must call beginTransaction() before you can rollback');
+@@ -148,14 +159,15 @@
+     /**
+      * Standalone commit after a SET autocommit=0;
+      */
+-    public function testStandaloneCommit(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function standaloneCommit(): void
+     {
+-        self::assertFalse($this->wrapper->inTransaction());
+-        self::assertSame(0, $this->wrapper->getNestedTransactionsCount());
++        static::assertFalse($this->wrapper->inTransaction());
++        static::assertSame(0, $this->wrapper->getNestedTransactionsCount());
+
+         $this->wrapper->commit();
+
+-        self::assertFalse($this->wrapper->inTransaction());
+-        self::assertSame(0, $this->wrapper->getNestedTransactionsCount());
++        static::assertFalse($this->wrapper->inTransaction());
++        static::assertSame(0, $this->wrapper->getNestedTransactionsCount());
+     }
+ }
+
+diff of 'test/unit/ConnectionTest.php':
+--- original
++++ modified
+@@ -48,24 +48,28 @@
+     {
+     }
+
+-    public function testSetDriver(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function setDriver(): void
+     {
+         $driver = new Driver($this->connection, new Statement(), new Result());
+-        self::assertSame($this->connection, $this->connection->setDriver($driver));
++        static::assertSame($this->connection, $this->connection->setDriver($driver));
+     }
+
+-    public function testSetConnectionParameters(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function setConnectionParameters(): void
+     {
+-        self::assertEquals($this->connection, $this->connection->setConnectionParameters([]));
++        static::assertEquals($this->connection, $this->connection->setConnectionParameters([]));
+     }
+
+-    public function testGetConnectionParameters(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getConnectionParameters(): void
+     {
+         $this->connection->setConnectionParameters(['foo' => 'bar']);
+-        self::assertEquals(['foo' => 'bar'], $this->connection->getConnectionParameters());
++        static::assertEquals(['foo' => 'bar'], $this->connection->getConnectionParameters());
+     }
+
+-    public function testNonSecureConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function nonSecureConnection(): void
+     {
+         $mysqli = $this->createMockMysqli(0);
+         /** @var Connection&MockObject $connection */
+@@ -83,7 +87,8 @@
+         $connection->connect();
+     }
+
+-    public function testSslConnection(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function sslConnection(): void
+     {
+         $mysqli = $this->createMockMysqli(MYSQLI_CLIENT_SSL);
+         /** @var Connection&MockObject $connection */
+@@ -102,7 +107,8 @@
+         $connection->connect();
+     }
+
+-    public function testSslConnectionNoVerify(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function sslConnectionNoVerify(): void
+     {
+         $mysqli = $this->createMockMysqli(MYSQLI_CLIENT_SSL | MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT);
+         /** @var Connection&MockObject $connection */
+@@ -124,7 +130,8 @@
+         $connection->connect();
+     }
+
+-    public function testConnectionFails(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function connectionFails(): void
+     {
+         $connection = new Connection([]);
+
+
+diff of 'test/unit/Sql/Ddl/AlterTableDecoratorTest.php':
+--- original
++++ modified
+@@ -40,7 +40,8 @@
+         return $decorator->getSqlString($this->platform);
+     }
+
+-    public function testAddColumnCharset(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function addColumnCharset(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -49,10 +50,11 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
++        static::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
+     }
+
+-    public function testAddColumnCollate(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function addColumnCollate(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -61,10 +63,11 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
++        static::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
+     }
+
+-    public function testAddColumnCharsetAndCollate(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function addColumnCharsetAndCollate(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -74,10 +77,11 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci', $sql);
++        static::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci', $sql);
+     }
+
+-    public function testAddColumnCharsetBeforeNotNull(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function addColumnCharsetBeforeNotNull(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -88,13 +92,14 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertMatchesRegularExpression(
++        static::assertMatchesRegularExpression(
+             '/CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL/',
+             $sql,
+         );
+     }
+
+-    public function testChangeColumnCharset(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function changeColumnCharset(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -103,10 +108,11 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
++        static::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
+     }
+
+-    public function testChangeColumnCollate(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function changeColumnCollate(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -115,10 +121,11 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
++        static::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
+     }
+
+-    public function testChangeColumnCharsetAndCollate(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function changeColumnCharsetAndCollate(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -129,13 +136,14 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertMatchesRegularExpression(
++        static::assertMatchesRegularExpression(
+             '/CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL/',
+             $sql,
+         );
+     }
+
+-    public function testAddColumnAfter(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function addColumnAfter(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -144,10 +152,11 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertStringContainsString('AFTER `id`', $sql);
++        static::assertStringContainsString('AFTER `id`', $sql);
+     }
+
+-    public function testAddColumnUnsigned(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function addColumnUnsigned(): void
+     {
+         $alter = new AlterTable('test');
+         $col   = new Column\Integer('id');
+@@ -157,7 +166,7 @@
+
+         $sql = $this->buildSql($alter);
+
+-        self::assertStringContainsString('UNSIGNED', $sql);
+-        self::assertStringContainsString('AUTO_INCREMENT', $sql);
++        static::assertStringContainsString('UNSIGNED', $sql);
++        static::assertStringContainsString('AUTO_INCREMENT', $sql);
+     }
+ }
+
+diff of 'test/unit/Sql/Ddl/CreateTableDecoratorTest.php':
+--- original
++++ modified
+@@ -40,7 +40,8 @@
+         return $decorator->getSqlString($this->platform);
+     }
+
+-    public function testColumnCharset(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function columnCharset(): void
+     {
+         $table = new CreateTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -49,10 +50,11 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
++        static::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
+     }
+
+-    public function testColumnCollate(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function columnCollate(): void
+     {
+         $table = new CreateTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -61,10 +63,11 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
++        static::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
+     }
+
+-    public function testColumnCharsetAndCollate(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function columnCharsetAndCollate(): void
+     {
+         $table = new CreateTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -74,10 +77,11 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci', $sql);
++        static::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci', $sql);
+     }
+
+-    public function testCharsetAppearsBeforeNotNull(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function charsetAppearsBeforeNotNull(): void
+     {
+         $table = new CreateTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -88,13 +92,14 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertMatchesRegularExpression(
++        static::assertMatchesRegularExpression(
+             '/CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL/',
+             $sql,
+         );
+     }
+
+-    public function testCharsetAppearsAfterUnsigned(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function charsetAppearsAfterUnsigned(): void
+     {
+         $table = new CreateTable('test');
+         $col   = new Column\Integer('id');
+@@ -104,10 +109,11 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertMatchesRegularExpression('/UNSIGNED CHARACTER SET utf8mb3/', $sql);
++        static::assertMatchesRegularExpression('/UNSIGNED CHARACTER SET utf8mb3/', $sql);
+     }
+
+-    public function testUnsignedOption(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function unsignedOption(): void
+     {
+         $table = new CreateTable('test');
+         $col   = new Column\Integer('id');
+@@ -117,11 +123,12 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertStringContainsString('UNSIGNED', $sql);
+-        self::assertStringContainsString('AUTO_INCREMENT', $sql);
++        static::assertStringContainsString('UNSIGNED', $sql);
++        static::assertStringContainsString('AUTO_INCREMENT', $sql);
+     }
+
+-    public function testCommentOption(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function commentOption(): void
+     {
+         $table = new CreateTable('test');
+         $col   = new Column\Varchar('name', 255);
+@@ -130,10 +137,11 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertStringContainsString('COMMENT', $sql);
++        static::assertStringContainsString('COMMENT', $sql);
+     }
+
+-    public function testFullColumnDefinition(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function fullColumnDefinition(): void
+     {
+         $table = new CreateTable('test');
+
+@@ -152,8 +160,8 @@
+
+         $sql = $this->buildSql($table);
+
+-        self::assertStringContainsString('UNSIGNED', $sql);
+-        self::assertStringContainsString('AUTO_INCREMENT', $sql);
+-        self::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL', $sql);
++        static::assertStringContainsString('UNSIGNED', $sql);
++        static::assertStringContainsString('AUTO_INCREMENT', $sql);
++        static::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL', $sql);
+     }
+ }
+
+diff of 'test/unit/AdapterPlatformTest.php':
+--- original
++++ modified
+@@ -42,43 +42,49 @@
+         $this->platform = new AdapterPlatform($pdo);
+     }
+
+-    public function testGetName(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getName(): void
+     {
+-        self::assertEquals('MySQL', $this->platform->getName());
++        static::assertSame('MySQL', $this->platform->getName());
+     }
+
+-    public function testGetQuoteIdentifierSymbol(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getQuoteIdentifierSymbol(): void
+     {
+-        self::assertEquals('`', $this->platform->getQuoteIdentifierSymbol());
++        static::assertSame('`', $this->platform->getQuoteIdentifierSymbol());
+     }
+
+-    public function testQuoteIdentifier(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function quoteIdentifier(): void
+     {
+-        self::assertEquals('`identifier`', $this->platform->quoteIdentifier('identifier'));
+-        self::assertEquals('`ident``ifier`', $this->platform->quoteIdentifier('ident`ifier'));
+-        self::assertEquals('`namespace:$identifier`', $this->platform->quoteIdentifier('namespace:$identifier'));
++        static::assertSame('`identifier`', $this->platform->quoteIdentifier('identifier'));
++        static::assertSame('`ident``ifier`', $this->platform->quoteIdentifier('ident`ifier'));
++        static::assertSame('`namespace:$identifier`', $this->platform->quoteIdentifier('namespace:$identifier'));
+     }
+
+-    public function testQuoteIdentifierChain(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function quoteIdentifierChain(): void
+     {
+-        self::assertEquals('`identifier`', $this->platform->quoteIdentifierChain('identifier'));
+-        self::assertEquals('`identifier`', $this->platform->quoteIdentifierChain(['identifier']));
+-        self::assertEquals('`schema`.`identifier`', $this->platform->quoteIdentifierChain(['schema', 'identifier']));
++        static::assertSame('`identifier`', $this->platform->quoteIdentifierChain('identifier'));
++        static::assertSame('`identifier`', $this->platform->quoteIdentifierChain(['identifier']));
++        static::assertSame('`schema`.`identifier`', $this->platform->quoteIdentifierChain(['schema', 'identifier']));
+
+-        self::assertEquals('`ident``ifier`', $this->platform->quoteIdentifierChain('ident`ifier'));
+-        self::assertEquals('`ident``ifier`', $this->platform->quoteIdentifierChain(['ident`ifier']));
+-        self::assertEquals(
++        static::assertSame('`ident``ifier`', $this->platform->quoteIdentifierChain('ident`ifier'));
++        static::assertSame('`ident``ifier`', $this->platform->quoteIdentifierChain(['ident`ifier']));
++        static::assertSame(
+             '`schema`.`ident``ifier`',
+             $this->platform->quoteIdentifierChain(['schema', 'ident`ifier'])
+         );
+     }
+
+-    public function testGetQuoteValueSymbol(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getQuoteValueSymbol(): void
+     {
+-        self::assertEquals("'", $this->platform->getQuoteValueSymbol());
++        static::assertSame("'", $this->platform->getQuoteValueSymbol());
+     }
+
+-    public function testQuoteValueRaisesNoticeWithoutPlatformSupport(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function quoteValueRaisesNoticeWithoutPlatformSupport(): void
+     {
+         /**
+          * todo: Determine if vulnerability warning is required during unit testing
+@@ -96,37 +102,40 @@
+         $this->platform->quoteValue('value');
+     }
+
+-    public function testQuoteValue(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function quoteValue(): void
+     {
+-        self::assertEquals("'value'", @$this->platform->quoteValue('value'));
+-        self::assertEquals("'Foo O\\'Bar'", @$this->platform->quoteValue("Foo O'Bar"));
+-        self::assertEquals(
++        static::assertSame("'value'", @$this->platform->quoteValue('value'));
++        static::assertSame("'Foo O\\'Bar'", @$this->platform->quoteValue("Foo O'Bar"));
++        static::assertSame(
+             '\'\\\'; DELETE FROM some_table; -- \'',
+             @$this->platform->quoteValue('\'; DELETE FROM some_table; -- ')
+         );
+-        self::assertEquals(
++        static::assertSame(
+             "'\\\\\\'; DELETE FROM some_table; -- '",
+             @$this->platform->quoteValue('\\\'; DELETE FROM some_table; -- ')
+         );
+     }
+
+-    public function testQuoteTrustedValue(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function quoteTrustedValue(): void
+     {
+-        self::assertEquals("'value'", $this->platform->quoteTrustedValue('value'));
+-        self::assertEquals("'Foo O\\'Bar'", $this->platform->quoteTrustedValue("Foo O'Bar"));
+-        self::assertEquals(
++        static::assertSame("'value'", $this->platform->quoteTrustedValue('value'));
++        static::assertSame("'Foo O\\'Bar'", $this->platform->quoteTrustedValue("Foo O'Bar"));
++        static::assertSame(
+             '\'\\\'; DELETE FROM some_table; -- \'',
+             $this->platform->quoteTrustedValue('\'; DELETE FROM some_table; -- ')
+         );
+
+         //                   '\\\'; DELETE FROM some_table; -- '  <- actual below
+-        self::assertEquals(
++        static::assertSame(
+             "'\\\\\\'; DELETE FROM some_table; -- '",
+             $this->platform->quoteTrustedValue('\\\'; DELETE FROM some_table; -- ')
+         );
+     }
+
+-    public function testQuoteValueList(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function quoteValueList(): void
+     {
+         /**
+          * @todo Determine if vulnerability warning is required during unit testing
+@@ -136,67 +145,69 @@
+         //    'Attempting to quote a value in PhpDb\Adapter\Platform\Mysql without extension/driver support can '
+         //    . 'introduce security vulnerabilities in a production environment'
+         //);
+-        self::assertEquals("'Foo O\\'Bar'", $this->platform->quoteValueList("Foo O'Bar"));
++        static::assertSame("'Foo O\\'Bar'", $this->platform->quoteValueList("Foo O'Bar"));
+     }
+
+-    public function testGetIdentifierSeparator(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function getIdentifierSeparator(): void
+     {
+-        self::assertEquals('.', $this->platform->getIdentifierSeparator());
++        static::assertSame('.', $this->platform->getIdentifierSeparator());
+     }
+
+-    public function testQuoteIdentifierInFragment(): void
++    #[\PHPUnit\Framework\Attributes\Test]
++    public function quoteIdentifierInFragment(): void
+     {
+-        self::assertEquals('`foo`.`bar`', $this->platform->quoteIdentifierInFragment('foo.bar'));
+-        self::assertEquals('`foo` as `bar`', $this->platform->quoteIdentifierInFragment('foo as bar'));
+-        self::assertEquals('`$TableName`.`bar`', $this->platform->quoteIdentifierInFragment('$TableName.bar'));
+-        self::assertEquals(
++        static::assertSame('`foo`.`bar`', $this->platform->quoteIdentifierInFragment('foo.bar'));
++        static::assertSame('`foo` as `bar`', $this->platform->quoteIdentifierInFragment('foo as bar'));
++        static::assertSame('`$TableName`.`bar`', $this->platform->quoteIdentifierInFragment('$TableName.bar'));
++        static::assertSame(
+             '`cmis:$TableName` as `cmis:TableAlias`',
+             $this->platform->quoteIdentifierInFragment('cmis:$TableName as cmis:TableAlias')
+         );
+
+-        $this->assertEquals(
++        static::assertSame(
+             '`foo-bar`.`bar-foo`',
+             $this->platform->quoteIdentifierInFragment('foo-bar.bar-foo')
+         );
+-        $this->assertEquals(
++        static::assertSame(
+             '`foo-bar` as `bar-foo`',
+             $this->platform->quoteIdentifierInFragment('foo-bar as bar-foo')
+         );
+-        $this->assertEquals(
++        static::assertSame(
+             '`$TableName-$ColumnName`.`bar-foo`',
+             $this->platform->quoteIdentifierInFragment('$TableName-$ColumnName.bar-foo')
+         );
+-        $this->assertEquals(
++        static::assertSame(
+             '`cmis:$TableName-$ColumnName` as `cmis:TableAlias-ColumnAlias`',
+             $this->platform->quoteIdentifierInFragment('cmis:$TableName-$ColumnName as cmis:TableAlias-ColumnAlias')
+         );
+
+         // single char words
+-        self::assertEquals(
++        static::assertSame(
+             '(`foo`.`bar` = `boo`.`baz`)',
+             $this->platform->quoteIdentifierInFragment('(foo.bar = boo.baz)', ['(', ')', '='])
+         );
+-        self::assertEquals(
++        static::assertSame(
+             '(`foo`.`bar`=`boo`.`baz`)',
+             $this->platform->quoteIdentifierInFragment('(foo.bar=boo.baz)', ['(', ')', '='])
+         );
+-        self::assertEquals('`foo`=`bar`', $this->platform->quoteIdentifierInFragment('foo=bar', ['=']));
++        static::assertSame('`foo`=`bar`', $this->platform->quoteIdentifierInFragment('foo=bar', ['=']));
+
+-        $this->assertEquals(
++        static::assertSame(
+             '(`foo-bar`.`bar-foo` = `boo-baz`.`baz-boo`)',
+             $this->platform->quoteIdentifierInFragment('(foo-bar.bar-foo = boo-baz.baz-boo)', ['(', ')', '='])
+         );
+-        $this->assertEquals(
++        static::assertSame(
+             '(`foo-bar`.`bar-foo`=`boo-baz`.`baz-boo`)',
+             $this->platform->quoteIdentifierInFragment('(foo-bar.bar-foo=boo-baz.baz-boo)', ['(', ')', '='])
+         );
+-        $this->assertEquals(
++        static::assertSame(
+             '`foo-bar`=`bar-foo`',
+             $this->platform->quoteIdentifierInFragment('foo-bar=bar-foo', ['='])
+         );
+
+         // case insensitive safe words
+-        self::assertEquals(
++        static::assertSame(
+             '(`foo`.`bar` = `boo`.`baz`) AND (`foo`.`baz` = `boo`.`baz`)',
+             $this->platform->quoteIdentifierInFragment(
+                 '(foo.bar = boo.baz) AND (foo.baz = boo.baz)',
+@@ -204,7 +215,7 @@
+             )
+         );
+
+-        $this->assertEquals(
++        static::assertSame(
+             '(`foo-bar`.`bar-foo` = `boo-baz`.`baz-boo`) AND (`foo-baz`.`baz-foo` = `boo-baz`.`baz-boo`)',
+             $this->platform->quoteIdentifierInFragment(
+                 '(foo-bar.bar-foo = boo-baz.baz-boo) AND (foo-baz.baz-foo = boo-baz.baz-boo)',
+@@ -213,7 +224,7 @@
+         );
+
+         // case insensitive safe words in field
+-        self::assertEquals(
++        static::assertSame(
+             '(`foo`.`bar` = `boo`.baz) AND (`foo`.baz = `boo`.baz)',
+             $this->platform->quoteIdentifierInFragment(
+                 '(foo.bar = boo.baz) AND (foo.baz = boo.baz)',
+@@ -222,7 +233,7 @@
+         );
+
+         // case insensitive safe words in field
+-        $this->assertEquals(
++        static::assertSame(
+             '(`foo-bar`.`bar-foo` = `boo-baz`.baz-boo) AND (`foo-baz`.`baz-foo` = `boo-baz`.baz-boo)',
+             $this->platform->quoteIdentifierInFragment(
+                 '(foo-bar.bar-foo = boo-baz.baz-boo) AND (foo-baz.baz-foo = boo-baz.baz-boo)',
+

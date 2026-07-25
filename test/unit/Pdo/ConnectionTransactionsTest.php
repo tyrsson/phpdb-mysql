@@ -11,6 +11,7 @@ use PhpDb\Mysql\Pdo\Connection;
 use PhpDbTest\Mysql\Pdo\TestAsset\ConnectionWrapper;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -35,24 +36,28 @@ final class ConnectionTransactionsTest extends TestCase
         $this->wrapper = new ConnectionWrapper();
     }
 
-    public function testBeginTransactionReturnsInstanceOfConnection(): void
+    #[Test]
+    public function beginTransactionReturnsInstanceOfConnection(): void
     {
         self::assertInstanceOf(Connection::class, $this->wrapper->beginTransaction());
     }
 
-    public function testBeginTransactionSetsInTransactionAtTrue(): void
+    #[Test]
+    public function beginTransactionSetsInTransactionAtTrue(): void
     {
         $this->wrapper->beginTransaction();
         self::assertTrue($this->wrapper->inTransaction());
     }
 
-    public function testCommitReturnsInstanceOfConnection(): void
+    #[Test]
+    public function commitReturnsInstanceOfConnection(): void
     {
         $this->wrapper->beginTransaction();
         self::assertInstanceOf(Connection::class, $this->wrapper->commit());
     }
 
-    public function testCommitSetsInTransactionAtFalse(): void
+    #[Test]
+    public function commitSetsInTransactionAtFalse(): void
     {
         $this->wrapper->beginTransaction();
         $this->wrapper->commit();
@@ -62,12 +67,14 @@ final class ConnectionTransactionsTest extends TestCase
     /**
      * Standalone commit after a SET autocommit=0;
      */
-    public function testCommitWithoutBeginReturnsInstanceOfConnection(): void
+    #[Test]
+    public function commitWithoutBeginReturnsInstanceOfConnection(): void
     {
         self::assertInstanceOf(Connection::class, $this->wrapper->commit());
     }
 
-    public function testNestedTransactionsCommit(): void
+    #[Test]
+    public function nestedTransactionsCommit(): void
     {
         $nested = 0;
 
@@ -94,7 +101,8 @@ final class ConnectionTransactionsTest extends TestCase
         self::assertSame(--$nested, $this->wrapper->getNestedTransactionsCount());
     }
 
-    public function testNestedTransactionsRollback(): void
+    #[Test]
+    public function nestedTransactionsRollback(): void
     {
         $nested = 0;
 
@@ -116,7 +124,8 @@ final class ConnectionTransactionsTest extends TestCase
         self::assertSame(0, $this->wrapper->getNestedTransactionsCount());
     }
 
-    public function testRollbackDisconnectedThrowsException(): void
+    #[Test]
+    public function rollbackDisconnectedThrowsException(): void
     {
         $this->wrapper->disconnect();
 
@@ -125,20 +134,23 @@ final class ConnectionTransactionsTest extends TestCase
         $this->wrapper->rollback();
     }
 
-    public function testRollbackReturnsInstanceOfConnection(): void
+    #[Test]
+    public function rollbackReturnsInstanceOfConnection(): void
     {
         $this->wrapper->beginTransaction();
         self::assertInstanceOf(Connection::class, $this->wrapper->rollback());
     }
 
-    public function testRollbackSetsInTransactionAtFalse(): void
+    #[Test]
+    public function rollbackSetsInTransactionAtFalse(): void
     {
         $this->wrapper->beginTransaction();
         $this->wrapper->rollback();
         self::assertFalse($this->wrapper->inTransaction());
     }
 
-    public function testRollbackWithoutBeginThrowsException(): void
+    #[Test]
+    public function rollbackWithoutBeginThrowsException(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Must call beginTransaction() before you can rollback');
@@ -148,7 +160,8 @@ final class ConnectionTransactionsTest extends TestCase
     /**
      * Standalone commit after a SET autocommit=0;
      */
-    public function testStandaloneCommit(): void
+    #[Test]
+    public function standaloneCommit(): void
     {
         self::assertFalse($this->wrapper->inTransaction());
         self::assertSame(0, $this->wrapper->getNestedTransactionsCount());

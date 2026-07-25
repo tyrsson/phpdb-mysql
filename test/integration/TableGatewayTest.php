@@ -11,6 +11,7 @@ use PhpDb\ResultSet\AbstractResultSet;
 use PhpDb\TableGateway\TableGateway;
 use PhpDbIntegrationTest\Mysql\Container\TestAsset\SetupTrait;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(AbstractResultSet::class, 'current')]
@@ -23,7 +24,8 @@ final class TableGatewayTest extends TestCase
     /**
      * @see https://github.com/zendframework/zend-db/issues/330
      */
-    public function testSelectWithEmptyCurrentWithBufferResult(): void
+    #[Test]
+    public function selectWithEmptyCurrentWithBufferResult(): void
     {
         /** @var AdapterInterface&Adapter $adapter */
         $adapter = $this->getAdapter([
@@ -47,7 +49,8 @@ final class TableGatewayTest extends TestCase
     /**
      * @see https://github.com/zendframework/zend-db/issues/330
      */
-    public function testSelectWithEmptyCurrentWithoutBufferResult(): void
+    #[Test]
+    public function selectWithEmptyCurrentWithoutBufferResult(): void
     {
         /** @var AdapterInterface&Adapter $adapter */
         $adapter      = $this->getAdapter([

@@ -34,10 +34,11 @@ class Connection extends AbstractConnection implements DriverAwareInterface
     /**
      * Constructor
      *
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(
-        array|mysqli|null $connectionInfo = null
+        array|mysqli|null $connectionInfo = null,
     ) {
         if (is_array($connectionInfo)) {
             $this->setConnectionParameters($connectionInfo);
@@ -45,40 +46,36 @@ class Connection extends AbstractConnection implements DriverAwareInterface
             $this->setResource($connectionInfo);
         } elseif (null !== $connectionInfo) {
             throw new Exception\InvalidArgumentException(
-                '$connection must be an array of parameters, a mysqli object or null'
+                '$connection must be an array of parameters, a mysqli object or null',
             );
         }
     }
 
-    public function setDriver(DriverInterface $driver): DriverAwareInterface
+    /** @inheritDoc */
+    #[Override]
+    public function beginTransaction(): ConnectionInterface
     {
-        $this->driver = $driver;
+        if (! $this->isConnected()) {
+            $this->connect();
+        }
+
+        $this->resource->autocommit(false);
+        $this->inTransaction = true;
 
         return $this;
     }
 
     /** @inheritDoc */
     #[Override]
-    public function getCurrentSchema(): string|false
+    public function commit(): ConnectionInterface
     {
         if (! $this->isConnected()) {
             $this->connect();
         }
 
-        $result = $this->resource->query('SELECT DATABASE()');
-        $r      = $result->fetch_row();
-
-        return $r[0];
-    }
-
-    /**
-     * Set resource
-     *
-     * @return $this Provides a fluent interface
-     */
-    public function setResource(mysqli $resource): static
-    {
-        $this->resource = $resource;
+        $this->resource->commit();
+        $this->inTransaction = false;
+        $this->resource->autocommit(true);
 
         return $this;
     }
@@ -96,7 +93,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
 
         // given a list of key names, test for existence in $p
         /** @var string[] $names */
-        $findParameterValue = static function (array $names) use ($p): string|null {
+        $findParameterValue = static function (array $names) use ($p): ?string {
             foreach ($names as $name) {
                 if (isset($p[$name])) {
                     return $p[$name];
@@ -164,7 +161,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
             throw new Exception\RuntimeException(
                 'Connection error',
                 $this->resource->connect_errno,
-                new Exception\ErrorException($this->resource->connect_error, $this->resource->connect_errno)
+                new Exception\ErrorException($this->resource->connect_error, $this->resource->connect_errno),
             );
         }
 
@@ -172,7 +169,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
             throw new Exception\RuntimeException(
                 'Connection error',
                 $this->resource->connect_errno,
-                new Exception\ErrorException($this->resource->connect_error, $this->resource->connect_errno)
+                new Exception\ErrorException($this->resource->connect_error, $this->resource->connect_errno),
             );
         }
 
@@ -181,12 +178,6 @@ class Connection extends AbstractConnection implements DriverAwareInterface
         }
 
         return $this;
-    }
-
-    /** @inheritDoc */
-    public function isConnected(): bool
-    {
-        return $this->resource instanceof mysqli;
     }
 
     /** @inheritDoc */
@@ -200,33 +191,57 @@ class Connection extends AbstractConnection implements DriverAwareInterface
         return $this;
     }
 
-    /** @inheritDoc */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws Exception\InvalidQueryException
+     */
     #[Override]
-    public function beginTransaction(): ConnectionInterface
+    public function execute(string $sql): ?ResultInterface
     {
         if (! $this->isConnected()) {
             $this->connect();
         }
 
-        $this->resource->autocommit(false);
-        $this->inTransaction = true;
+        $this->profiler?->profilerStart($sql);
 
-        return $this;
+        $resultResource = $this->resource->query($sql);
+
+        $this->profiler?->profilerFinish();
+
+        // if the returnValue is something other than a mysqli_result, bypass wrapping it
+        if (false === $resultResource) {
+            throw new Exception\InvalidQueryException($this->resource->error);
+        }
+
+        return $this->driver->createResult(true === $resultResource ? $this->resource : $resultResource);
     }
 
     /** @inheritDoc */
     #[Override]
-    public function commit(): ConnectionInterface
+    public function getCurrentSchema(): string|false
     {
         if (! $this->isConnected()) {
             $this->connect();
         }
 
-        $this->resource->commit();
-        $this->inTransaction = false;
-        $this->resource->autocommit(true);
+        $result = $this->resource->query('SELECT DATABASE()');
+        $r      = $result->fetch_row();
 
-        return $this;
+        return $r[0];
+    }
+
+    /** @inheritDoc */
+    #[Override]
+    public function getLastGeneratedValue(?string $name = null): string|int|false|null
+    {
+        return $this->resource->insert_id;
+    }
+
+    /** @inheritDoc */
+    public function isConnected(): bool
+    {
+        return $this->resource instanceof mysqli;
     }
 
     /** @inheritDoc */
@@ -248,37 +263,23 @@ class Connection extends AbstractConnection implements DriverAwareInterface
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws Exception\InvalidQueryException
-     */
-    #[Override]
-    public function execute($sql): ?ResultInterface
+    public function setDriver(DriverInterface $driver): DriverAwareInterface
     {
-        if (! $this->isConnected()) {
-            $this->connect();
-        }
+        $this->driver = $driver;
 
-        $this->profiler?->profilerStart($sql);
-
-        $resultResource = $this->resource->query($sql);
-
-        $this->profiler?->profilerFinish($sql);
-
-        // if the returnValue is something other than a mysqli_result, bypass wrapping it
-        if (false === $resultResource) {
-            throw new Exception\InvalidQueryException($this->resource->error);
-        }
-
-        return $this->driver->createResult(true === $resultResource ? $this->resource : $resultResource);
+        return $this;
     }
 
-    /** @inheritDoc */
-    #[Override]
-    public function getLastGeneratedValue(?string $name = null): string|int|false|null
+    /**
+     * Set resource
+     *
+     * @return $this Provides a fluent interface
+     */
+    public function setResource(mysqli $resource): static
     {
-        return $this->resource->insert_id;
+        $this->resource = $resource;
+
+        return $this;
     }
 
     /**

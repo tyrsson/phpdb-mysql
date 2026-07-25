@@ -12,6 +12,7 @@ use PhpDb\Mysql\Pdo\Driver as PdoDriver;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('integration')]
@@ -22,7 +23,8 @@ final class PlatformInterfaceFactoryTest extends TestCase
 {
     use TestAsset\SetupTrait;
 
-    public function testInvokeReturnsPlatformInterfaceWhenDbDriverIsPdo(): void
+    #[Test]
+    public function invokeReturnsPlatformInterfaceWhenDbDriverIsPdo(): void
     {
         $adapter = $this->getAdapter(['driver' => PdoDriver::class]);
 

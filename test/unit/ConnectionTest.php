@@ -13,6 +13,7 @@ use PhpDb\Mysql\Result;
 use PhpDb\Mysql\Statement;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -48,24 +49,28 @@ final class ConnectionTest extends TestCase
     {
     }
 
-    public function testSetDriver(): void
+    #[Test]
+    public function setDriver(): void
     {
         $driver = new Driver($this->connection, new Statement(), new Result());
         self::assertSame($this->connection, $this->connection->setDriver($driver));
     }
 
-    public function testSetConnectionParameters(): void
+    #[Test]
+    public function setConnectionParameters(): void
     {
         self::assertEquals($this->connection, $this->connection->setConnectionParameters([]));
     }
 
-    public function testGetConnectionParameters(): void
+    #[Test]
+    public function getConnectionParameters(): void
     {
         $this->connection->setConnectionParameters(['foo' => 'bar']);
         self::assertEquals(['foo' => 'bar'], $this->connection->getConnectionParameters());
     }
 
-    public function testNonSecureConnection(): void
+    #[Test]
+    public function nonSecureConnection(): void
     {
         $mysqli = $this->createMockMysqli(0);
         /** @var Connection&MockObject $connection */
@@ -83,7 +88,8 @@ final class ConnectionTest extends TestCase
         $connection->connect();
     }
 
-    public function testSslConnection(): void
+    #[Test]
+    public function sslConnection(): void
     {
         $mysqli = $this->createMockMysqli(MYSQLI_CLIENT_SSL);
         /** @var Connection&MockObject $connection */
@@ -102,7 +108,8 @@ final class ConnectionTest extends TestCase
         $connection->connect();
     }
 
-    public function testSslConnectionNoVerify(): void
+    #[Test]
+    public function sslConnectionNoVerify(): void
     {
         $mysqli = $this->createMockMysqli(MYSQLI_CLIENT_SSL | MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT);
         /** @var Connection&MockObject $connection */
@@ -124,7 +131,8 @@ final class ConnectionTest extends TestCase
         $connection->connect();
     }
 
-    public function testConnectionFails(): void
+    #[Test]
+    public function connectionFails(): void
     {
         $connection = new Connection([]);
 

@@ -11,6 +11,7 @@ use PhpDb\Adapter\SchemaAwareInterface;
 use PhpDb\Mysql\Pdo\Driver;
 use PhpDbIntegrationTest\Mysql\Container\TestAsset\SetupTrait;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(Adapter::class, 'getCurrentSchema')]
@@ -23,14 +24,16 @@ abstract class AbstractAdapterTestCase extends TestCase
 {
     use SetupTrait;
 
-    public function testConnection(): void
+    #[Test]
+    public function connection(): void
     {
         /** @var ConnectionInterface $connection */
         $connection = $this->getAdapter()->getDriver()->getConnection();
         $this->assertInstanceOf(ConnectionInterface::class, $connection);
     }
 
-    public function testGetCurrentSchema(): void
+    #[Test]
+    public function getCurrentSchema(): void
     {
         /** @var AdapterInterface&SchemaAwareInterface&Adapter $adapter */
         $adapter = $this->getAdapter();
@@ -39,7 +42,8 @@ abstract class AbstractAdapterTestCase extends TestCase
         self::assertNotEmpty($schema);
     }
 
-    public function testDriverDisconnectAfterQuoteWithPlatform(): void
+    #[Test]
+    public function driverDisconnectAfterQuoteWithPlatform(): void
     {
         $isTcpConnection = $this->isTcpConnection();
 

@@ -12,6 +12,7 @@ use PhpDb\Adapter\Exception\RuntimeException;
 use PhpDb\Mysql\Pdo\Connection;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(Connection::class, 'getResource')]
@@ -34,7 +35,8 @@ final class ConnectionTest extends TestCase
     /**
      * Test getResource method tries to connect to  the database, it should never return null
      */
-    public function testResource(): void
+    #[Test]
+    public function resource(): void
     {
         $this->expectException(RuntimeException::class);
         $this->connection->getResource();
@@ -43,7 +45,8 @@ final class ConnectionTest extends TestCase
     /**
      * Test getConnectedDsn returns a DSN string if it has been set
      */
-    public function testGetDsn(): void
+    #[Test]
+    public function getDsn(): void
     {
         $dsn = "mysql:";
         $this->connection->setConnectionParameters(['dsn' => $dsn]);
@@ -57,7 +60,8 @@ final class ConnectionTest extends TestCase
     }
 
     #[Group('2622')]
-    public function testArrayOfConnectionParametersCreatesCorrectDsn(): void
+    #[Test]
+    public function arrayOfConnectionParametersCreatesCorrectDsn(): void
     {
         $connection = new Connection([
             'driver'      => 'pdo_mysql',
@@ -79,7 +83,8 @@ final class ConnectionTest extends TestCase
         self::assertStringContainsString('unix_socket=/var/run/mysqld/mysqld.sock', $responseString);
     }
 
-    public function testHostnameAndUnixSocketThrowsInvalidConnectionParametersException(): void
+    #[Test]
+    public function hostnameAndUnixSocketThrowsInvalidConnectionParametersException(): void
     {
         $this->expectException(InvalidConnectionParametersException::class);
         $this->expectExceptionMessage(

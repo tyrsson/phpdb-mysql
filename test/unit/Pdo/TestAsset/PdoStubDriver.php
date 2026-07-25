@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpDbTest\Mysql\Pdo\TestAsset;
 
 use PDO;
+use SensitiveParameter;
 
 final class PdoStubDriver extends PDO
 {
@@ -23,7 +24,7 @@ final class PdoStubDriver extends PDO
      * @param string $password
      * @phpstan-ignore constructor.unusedParameter, constructor.unusedParameter, constructor.unusedParameter
      */
-    public function __construct(string $dsn, $user, #[\SensitiveParameter] $password)
+    public function __construct(string $dsn, $user, #[SensitiveParameter] $password)
     {
     }
 

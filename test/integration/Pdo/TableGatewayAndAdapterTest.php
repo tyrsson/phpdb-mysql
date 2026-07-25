@@ -11,6 +11,7 @@ use PhpDb\TableGateway\TableGateway;
 use PhpDbIntegrationTest\Mysql\Container\TestAsset\SetupTrait;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function array_fill;
@@ -30,7 +31,8 @@ final class TableGatewayAndAdapterTest extends TestCase
      * @throws Exception
      */
     #[DataProvider('connections')]
-    public function testGetOutOfConnections(): void
+    #[Test]
+    public function getOutOfConnections(): void
     {
         $adapter = $this->getAdapter();
         $adapter->query('SELECT VERSION();');

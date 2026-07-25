@@ -13,6 +13,7 @@ use PhpDb\Mysql\Sql\Ddl\AlterTableDecorator;
 use PhpDb\Sql\Ddl\AlterTable;
 use PhpDb\Sql\Ddl\Column;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversMethod(AlterTableDecorator::class, 'processAddColumns')]
@@ -40,7 +41,8 @@ final class AlterTableDecoratorTest extends TestCase
         return $decorator->getSqlString($this->platform);
     }
 
-    public function testAddColumnCharset(): void
+    #[Test]
+    public function addColumnCharset(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -52,7 +54,8 @@ final class AlterTableDecoratorTest extends TestCase
         self::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
     }
 
-    public function testAddColumnCollate(): void
+    #[Test]
+    public function addColumnCollate(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -64,7 +67,8 @@ final class AlterTableDecoratorTest extends TestCase
         self::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
     }
 
-    public function testAddColumnCharsetAndCollate(): void
+    #[Test]
+    public function addColumnCharsetAndCollate(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -77,7 +81,8 @@ final class AlterTableDecoratorTest extends TestCase
         self::assertStringContainsString('CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci', $sql);
     }
 
-    public function testAddColumnCharsetBeforeNotNull(): void
+    #[Test]
+    public function addColumnCharsetBeforeNotNull(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -94,7 +99,8 @@ final class AlterTableDecoratorTest extends TestCase
         );
     }
 
-    public function testChangeColumnCharset(): void
+    #[Test]
+    public function changeColumnCharset(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -106,7 +112,8 @@ final class AlterTableDecoratorTest extends TestCase
         self::assertStringContainsString('CHARACTER SET utf8mb3', $sql);
     }
 
-    public function testChangeColumnCollate(): void
+    #[Test]
+    public function changeColumnCollate(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -118,7 +125,8 @@ final class AlterTableDecoratorTest extends TestCase
         self::assertStringContainsString('COLLATE utf8mb3_unicode_ci', $sql);
     }
 
-    public function testChangeColumnCharsetAndCollate(): void
+    #[Test]
+    public function changeColumnCharsetAndCollate(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -135,7 +143,8 @@ final class AlterTableDecoratorTest extends TestCase
         );
     }
 
-    public function testAddColumnAfter(): void
+    #[Test]
+    public function addColumnAfter(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Varchar('name', 255);
@@ -147,7 +156,8 @@ final class AlterTableDecoratorTest extends TestCase
         self::assertStringContainsString('AFTER `id`', $sql);
     }
 
-    public function testAddColumnUnsigned(): void
+    #[Test]
+    public function addColumnUnsigned(): void
     {
         $alter = new AlterTable('test');
         $col   = new Column\Integer('id');
