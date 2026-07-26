@@ -220,6 +220,7 @@ final class Source extends AbstractSource
 
         $realName    = null;
         $constraints = [];
+        $isFK        = false;
         foreach ($results->toArray() as $row) {
             if ($row['CONSTRAINT_NAME'] !== $realName) {
                 $realName = $row['CONSTRAINT_NAME'];
@@ -227,7 +228,7 @@ final class Source extends AbstractSource
                 if ($isFK) {
                     $name = $realName;
                 } else {
-                    $name = "_laminas_{$row['TABLE_NAME']}_{$realName}";
+                    $name = "_phpdb_{$row['TABLE_NAME']}_{$realName}";
                 }
                 $constraints[$name] = [
                     'constraint_name' => $name,
