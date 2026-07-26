@@ -15,6 +15,7 @@ use PhpDb\Adapter\Driver\ResultInterface;
 use PhpDb\Adapter\Exception;
 use PhpDb\Adapter\Exception\InvalidArgumentException;
 
+use function array_key_exists;
 use function constant;
 use function defined;
 use function is_array;
@@ -95,7 +96,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
         /** @var string[] $names */
         $findParameterValue = static function (array $names) use ($p): ?string {
             foreach ($names as $name) {
-                if (isset($p[$name])) {
+                if (array_key_exists($name, $p)) {
                     return $p[$name];
                 }
             }
@@ -109,7 +110,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
         $password = $findParameterValue(['password', 'passwd', 'pw']);
         $database = $findParameterValue(['database', 'dbname', 'db', 'schema']);
         /** @var int|null $port */
-        $port = isset($p['port']) ? (int) $p['port'] : null;
+        $port = array_key_exists('port', $p) ? (int) $p['port'] : null;
         /** @var string|null $socket */
         $socket = $p['socket'] ?? null;
 
@@ -147,7 +148,7 @@ class Connection extends AbstractConnection implements DriverAwareInterface
             $this->resource->ssl_set($clientKey, $clientCert, $caCert, $caPath, $cipher);
             //MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT is not valid option, needs to be set as flag
             if (
-                isset($p['driver_options'][MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT])
+                array_key_exists(MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT, $p['driver_options'] ?? [])
             ) {
                 $flags |= MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
             }

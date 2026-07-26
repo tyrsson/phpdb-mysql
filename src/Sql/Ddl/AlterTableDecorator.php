@@ -55,7 +55,7 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
     ];
 
     public function setSubject(
-        SqlInterface|PreparableSqlInterface|null $subject
+        SqlInterface|PreparableSqlInterface|null $subject,
     ): PlatformDecoratorInterface {
         $this->subject = $subject;
 
@@ -73,14 +73,14 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
             if (false !== $insertPos) {
                 switch ($needle) {
                     case 'REFERENCES':
-                        $insertStart[2] = ! isset($insertStart[2]) ? $insertPos : $insertStart[2];
+                        $insertStart[2] ??= $insertPos;
                     // no break
                     case 'PRIMARY':
                     case 'UNIQUE':
-                        $insertStart[1] = ! isset($insertStart[1]) ? $insertPos : $insertStart[1];
+                        $insertStart[1] ??= $insertPos;
                     // no break
                     default:
-                        $insertStart[0] = ! isset($insertStart[0]) ? $insertPos : $insertStart[0];
+                        $insertStart[0] ??= $insertPos;
                 }
             }
         }
@@ -239,15 +239,6 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
     }
 
     /**
-     * @param string $name
-     * @return string
-     */
-    private function normalizeColumnOption($name)
-    {
-        return strtolower(str_replace(['-', '_', ' '], '', $name));
-    }
-
-    /**
      * @param string $columnA
      * @param string $columnB
      * @return int
@@ -262,5 +253,14 @@ final class AlterTableDecorator extends AlterTable implements PlatformDecoratorI
         $columnB = $this->columnOptionSortOrder[$columnB] ?? count($this->columnOptionSortOrder);
 
         return $columnA - $columnB;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function normalizeColumnOption($name)
+    {
+        return strtolower(str_replace(['-', '_', ' '], '', $name));
     }
 }

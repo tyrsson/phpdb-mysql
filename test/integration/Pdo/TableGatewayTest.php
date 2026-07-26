@@ -99,9 +99,9 @@ final class TableGatewayTest extends TestCase
         $this->assertTrue(count($rowset) > 0);
         /** @var ArrayObject $row */
         foreach ($rowset as $row) {
-            $this->assertTrue(isset($row->id));
-            $this->assertNotEmpty(isset($row->name));
-            $this->assertNotEmpty(isset($row->value));
+            $this->assertTrue($row->id !== null);
+            $this->assertNotEmpty($row->name !== null);
+            $this->assertNotEmpty($row->value !== null);
         }
     }
 

@@ -27,32 +27,13 @@ class Connection extends AbstractPdoConnection
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(
-        PDO|array $connectionParameters
+        PDO|array $connectionParameters,
     ) {
         if (is_array($connectionParameters)) {
             $this->setConnectionParameters($connectionParameters);
         } elseif ($connectionParameters instanceof PDO) {
             $this->setResource($connectionParameters);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    #[Override]
-    public function getCurrentSchema(): string|false
-    {
-        if (! $this->isConnected()) {
-            $this->connect();
-        }
-
-        /** @var PDOStatement $result */
-        $result = $this->resource->query('SELECT DATABASE()');
-        if ($result instanceof PDOStatement) {
-            return $result->fetchColumn();
-        }
-
-        return false;
     }
 
     /**
@@ -73,50 +54,50 @@ class Connection extends AbstractPdoConnection
 
         foreach ($this->connectionParameters as $key => $value) {
             $result = match (strtolower($key)) {
-                'dsn'                                => $dsn        = (string) $value,
-                'user', 'username'                   => $username   = (string) $value,
-                'password', 'passwd', 'pw'           => $password   = (string) $value,
-                'host', 'hostname'                   => $hostname   = (string) $value,
-                'port'                               => $port       = (int) $value,
-                'charset'                            => $charset    = (string) $value,
-                'dbname', 'database', 'db', 'schema' => $database   = (string) $value,
+                'dsn'                                => $dsn = (string) $value,
+                'user', 'username'                   => $username = (string) $value,
+                'password', 'passwd', 'pw'           => $password = (string) $value,
+                'host', 'hostname'                   => $hostname = (string) $value,
+                'port'                               => $port = (int) $value,
+                'charset'                            => $charset = (string) $value,
+                'dbname', 'database', 'db', 'schema' => $database = (string) $value,
                 'unix_socket'                        => $unixSocket = (string) $value,
-                'version'                            => $version    = (string) $value,
+                'version'                            => $version = (string) $value,
                 // todo: should we suppport sslmode for pdo pgsql?
                 'driver_options' => (static function (&$options, $value): void {
                     $value   = (array) $value;
                     $options = array_diff_key($options, $value) + $value;
                 })($options, $value),
-                default => $options[$key] = $value,
+                default          => $options[$key] = $value,
             };
         }
         unset($result);
 
-        if (isset($hostname, $unixSocket)) {
+        if ($hostname !== null && $unixSocket !== null) {
             throw new Exception\InvalidConnectionParametersException(
                 'Ambiguous connection parameters, both hostname and unix_socket parameters were set',
-                $this->connectionParameters
+                $this->connectionParameters,
             );
         }
 
-        if (! isset($dsn)) {
+        if ($dsn === null) {
             $dsn = [];
-            if (isset($database)) {
+            if ($database !== null) {
                 $dsn[] = "dbname={$database}";
             }
-            if (isset($hostname)) {
+            if ($hostname !== null) {
                 $dsn[] = "host={$hostname}";
             }
-            if (isset($port)) {
+            if ($port !== null) {
                 $dsn[] = "port={$port}";
             }
-            if (isset($charset)) {
+            if ($charset !== null) {
                 $dsn[] = "charset={$charset}";
             }
-            if (isset($unixSocket)) {
+            if ($unixSocket !== null) {
                 $dsn[] = "unix_socket={$unixSocket}";
             }
-            if (isset($version)) {
+            if ($version !== null) {
                 $dsn[] = "version={$version}";
             }
             $dsn = 'mysql:' . implode(';', $dsn);
@@ -125,7 +106,7 @@ class Connection extends AbstractPdoConnection
         if (! is_string($dsn)) {
             throw new Exception\InvalidConnectionParametersException(
                 'A dsn was not provided or could not be constructed from your parameters',
-                $this->connectionParameters
+                $this->connectionParameters,
             );
         }
 
@@ -144,6 +125,25 @@ class Connection extends AbstractPdoConnection
         }
 
         return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
+    public function getCurrentSchema(): string|false
+    {
+        if (! $this->isConnected()) {
+            $this->connect();
+        }
+
+        /** @var PDOStatement $result */
+        $result = $this->resource->query('SELECT DATABASE()');
+        if ($result instanceof PDOStatement) {
+            return $result->fetchColumn();
+        }
+
+        return false;
     }
 
     #[Override]
